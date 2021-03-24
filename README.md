@@ -131,6 +131,9 @@ If you want to play more with Viewflow, follow the installation instruction belo
 
 ## Installation instructions
 
+:envelope: *If you have any issue with the installation, configuration, or creation of your DAGs, do not hesitate to [contact us](./MAINTAINERS.md)!*
+
+
 The current installation process requires you to install Viewflow from the GitHub repository:
 
 ```sh
