@@ -6,6 +6,8 @@ Viewflow automatically creates Airflow DAGs and tasks based on SQL or Python fil
 
 One of the major features of Viewflow is its ability to manage tasks’ dependencies, i.e., views used to create another view. Viewflow can automatically extract from the code (SQL query or Python script) the internal and external dependencies.. An internal dependency is a view that belongs to the same DAG as a view being created. An external dependency is a view that belongs to a different DAG. The benefits of automatic dependency management are twofold: First, data scientists don't have to manually list dependencies -- which is usually an error-prone process. Second, it makes sure that no view is built on stale data (because all dependent views will be updated beforehand).
 
+Currently, Viewflow supports SQL and Python views and PostgreSQL/Redshift as destination. We will continue improving viewflow by adding new view types (e.g., R, Jupyter Notebooks, ...) and destination (e.g. Snowflake, BigQuery, ...).
+
 ## Viewflow demo
 
 We created a demo that shows how Viewflow works. The demo creates two DAGs: `viewflow-demo-1` and `viewflow-demo-2`. These DAGs create a total of four views in a local Postgres database . Check out the view files in [demo/dags/](./demo/dags/).
