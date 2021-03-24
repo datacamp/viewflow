@@ -235,6 +235,11 @@ Viewflow expects some metadata. Here are the fields that should be included in a
 * **schema**: The name of the schema in which Viewflow creates the view. It's also used by Viewflow to create the dependencies.
 * **connection_id**: Airflow connection name used to connect to the database (See Section [*Create an Airflow connection to your destination*](https://github.com/datacamp/viewflow#create-an-airflow-connection-to-your-destination)).
 
+# Contributing to Viewflow
+
+We welcome all sorts of contributions, be it new features, bug fixes or documentation, we encourage you to create a new PR. To create a new PR or to report new bugs, please read how to [contribute to Viewflow](CONTRIBUTION.md). 
+
+In the remainder of this section, we show you how to prepare your environment to contribute to Viewflow.
 ## Install Poetry
 
 See https://python-poetry.org/docs/#osx-linux-bashonwindows-install-instructions for comprehensive documentation.
