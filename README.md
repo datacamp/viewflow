@@ -219,6 +219,16 @@ def python_view(db_engine):
 
 Please note that Viewflow expects the Python function that creates the view to have the parameter `db_engine` (used to connect to the database). You don't have to set `db_engine` anywhere, Viewflow takes care of setting this variable.
 
+### View metadata
+
+Viewflow expects some metadata. Here are the fields that should include in a `yml` format:
+
+* **owner**: The owner of the view (i.e., who is responsible of what produces the view). The owner appears in Airflow and allows users to know who they should to talk to if they have some questions about the view.
+* **description**: What is the view about. Viewflow uses this field as a view comment in the database. The description can be retrieved in SQL (see Section [*Query the views*](https://github.com/datacamp/viewflow#query-the-views)).
+* **fields (list)**: Description of each column of the view. Viewflow uses these fields as column comments in the database. The column descriptions can be retrieved in SQL (see Section [*Query the views*](https://github.com/datacamp/viewflow#query-the-views)).
+* **schema**: The name of the schema in which Viewflow creates the view. It also used by Viewflow to creates the dependencies.
+* **connection_id**: Airflow connection name used to connect to the database (See Secion [*Create an Airflow connection to your destination*](https://github.com/datacamp/viewflow#create-an-airflow-connection-to-your-destination)).
+
 ## Install Poetry
 
 See https://python-poetry.org/docs/#osx-linux-bashonwindows-install-instructions for a comprehensive documentation.
