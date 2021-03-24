@@ -1,0 +1,13 @@
+owner: engineering@datacamp.com
+type: PostgresOperator
+connection_id: postgres_viewflow
+description: Description
+tags:
+  - cool
+  - new
+fields:
+  user_id: User ID
+  email: Email
+content: |-
+  SELECT user_id, email FROM viewflow.users
+schema: viewflow

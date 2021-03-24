@@ -1,0 +1,10 @@
+owner: engineering@datacamp.com
+type: PostgresOperator
+description: This is a very simple Postgres task.
+connection_id: postgres_viewflow
+tags:
+  - cool
+  - new
+content: |-
+  SELECT user_id, email FROM main_app.users
+schema: viewflow

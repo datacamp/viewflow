@@ -1,0 +1,14 @@
+owner: engineering@datacamp.com
+email: engineering@datacamp.com
+type: PostgresOperator
+description: This is a very simple task with dependency.
+fields:
+  id: This is the ID.
+depends_on:
+  - task_1
+tags:
+  - cool
+  - new
+content: |-
+  SELECT id FROM viewflow.task_1 WHERE id=0
+schema: viewflow

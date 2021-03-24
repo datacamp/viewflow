@@ -1,0 +1,58 @@
+version: "2.1"
+services:
+  postgres:
+    image: postgres:12
+    restart: always
+    environment:
+      - POSTGRES_USER=airflow
+      - POSTGRES_PASSWORD=airflow
+      - POSTGRES_DB=airflow
+    ports:
+      - "5433:5432"
+    volumes:
+        - ./demo/scripts/load_postgres.sql:/docker-entrypoint-initdb.d/load_postgres.sql
+        - ./demo/pg-data:/var/lib/postgresql/data
+
+  scheduler:
+    build:
+      context: ./
+    restart: always
+    depends_on:
+      - postgres
+      - webserver
+    env_file:
+      - ./demo/.env
+    ports:
+      - "8793:8793"
+    volumes:
+      - ./demo/dags:/opt/airflow/dags
+      - ./demo/airflow-logs:/opt/airflow/logs
+      - ./demo/scripts:/opt/airflow/scripts
+    entrypoint: ./scripts/local-entrypoint-scheduler.sh
+    healthcheck:
+      test: ["CMD-SHELL", "[ -f /usr/local/airflow/airflow-webserver.pid ]"]
+      interval: 30s
+      timeout: 30s
+      retries: 3
+
+  webserver:
+    build:
+      context: ./
+    hostname: webserver
+    restart: always
+    depends_on:
+      - postgres
+    env_file:
+      - ./demo/.env
+    volumes:
+      - ./demo/dags:/opt/airflow/dags
+      - ./demo/scripts:/opt/airflow/scripts
+      - ./demo/airflow-logs:/opt/airflow/logs
+    ports:
+      - "8080:8080"
+    entrypoint: ./scripts/local-entrypoint-webserver.sh
+    healthcheck:
+      test: ["CMD-SHELL", "[ -f /usr/local/airflow/airflow-webserver.pid ]"]
+      interval: 30s
+      timeout: 30s
+      retries: 32

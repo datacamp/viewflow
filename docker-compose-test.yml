@@ -1,0 +1,16 @@
+version: '3.3'
+
+services:
+  db:
+    image: "postgres:11"
+    container_name: "viewflow_postgres"
+    environment:
+      POSTGRES_PASSWORD: 'passw0rd'
+      POSTGRES_USER: 'user'
+      POSTGRES_DB: 'viewflow'
+    ports:
+      - '5432:5432'
+    expose:
+      - '5432'
+
+      

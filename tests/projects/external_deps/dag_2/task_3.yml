@@ -1,0 +1,12 @@
+owner: engineering@datacamp.com
+type: PostgresOperator
+description: This is a very simple Postgres task.
+connection_id: postgres_viewflow
+depends_on:
+  - dag_1/task_1
+tags:
+  - cool
+  - new
+content: |-
+  SELECT user_id, email FROM viewflow.task_1 JOIN viewflow.task_2 USING (user_id)
+schema: viewflow

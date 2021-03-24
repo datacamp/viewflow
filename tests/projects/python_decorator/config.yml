@@ -1,0 +1,4 @@
+default_args:
+    owner:  data@datacamp.com
+schedule_interval: 0 5 * * *
+start_date: "2020-08-31"

@@ -1,0 +1,17 @@
+schema: viewflow
+owner: engineering@datacamp.com
+type: PostgresOperator
+description: This is a very simple Postgres task with SQL templating.
+connection_id: postgres_viewflow
+tags:
+  - cool
+  - new
+params:
+  user_ids: [1, 2, 3]
+content: |-
+  {% for user_id in params.user_ids %}
+    {% if loop.index > 1 %}
+      UNION ALL
+    {% endif %}
+    SELECT user_id, email FROM viewflow.users WHERE user_id={{ user_id }}
+  {% endfor %}

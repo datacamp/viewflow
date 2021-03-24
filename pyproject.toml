@@ -1,0 +1,30 @@
+[tool.poetry]
+name = "viewflow"
+version = "0.1.0"
+description = "Viewflow for Python"
+authors = ["Vincent Vankrunkelsven <vincent@datacamp.com>", "Ramnath Vaidyanathan <ramnath@datacamp.com>", "Gaëtan Podevijn <gaetan@datacamp.com"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.7"
+apache-airflow = "1.10.14"
+psycopg2 = "^2.8.5"
+numpy = "^1.19.1"
+pandas = ">=1.1"
+boto3 = "^1.14.34"
+fsspec = "^0.8.0"
+ratelimit = "^2.2.1"
+networkx = "^2.5"
+sqlalchemy = "<1.4.0"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.4.2"
+mypy = "^0.770"
+pytest-cov = "^2.8.1"
+codecov = "^2.0.22"
+black = "^19.10b0"
+PyYAML = "5.1"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
