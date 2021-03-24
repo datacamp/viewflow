@@ -127,7 +127,7 @@ select
 ```
 
 And that's it! Congrats on running the demo :rocket: 
-If you want to play more with Viewflow, follow the installation instruction below.
+If you want to play more with Viewflow, follow the installation instructions below.
 
 ## Installation instructions
 
