@@ -133,7 +133,7 @@ If you want to play more with Viewflow, follow the installation instruction belo
 The current installation process requires you to install Viewflow from the GitHub repository:
 
 ```sh
-RUN pip install git+https://github.com/datacamp-engineering/viewflow.git 
+RUN pip install git+https://github.com/datacamp/viewflow.git 
 ```
 
 ## Create a new DAG 
