@@ -2,7 +2,7 @@
 name = "viewflow"
 version = "0.1.0"
 description = "Viewflow for Python"
-authors = ["Vincent Vankrunkelsven <vincent@datacamp.com>", "Ramnath Vaidyanathan <ramnath@datacamp.com>", "Gaëtan Podevijn <gaetan@datacamp.com"]
+authors = ["Vincent Vankrunkelsven <vincent@datacamp.com>", "Ramnath Vaidyanathan <ramnath@datacamp.com>", "Gaëtan Podevijn <gaetan@datacamp.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
