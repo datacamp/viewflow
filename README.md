@@ -8,6 +8,8 @@ One of the major features of Viewflow is its ability to manage tasks' dependenci
 
 Currently, Viewflow supports SQL and Python views and PostgreSQL/Redshift as a destination. We will continue improving Viewflow by adding new view types (e.g., R, Jupyter Notebooks, ...) and destination (e.g., Snowflake, BigQuery, ...).
 
+Do you want more context on why we built and released Viewflow? Check out our announcement bog post: [*Data Scientists, don’t worry about data engineering: Viewflow has your back.*](https://medium.com/datacamp-engineering/viewflow-fe07353fa068)!
+
 ## Viewflow demo
 
 We created a demo that shows how Viewflow works. The demo creates two DAGs: `viewflow-demo-1` and `viewflow-demo-2`. These DAGs create a total of four views in a local Postgres database. Check out the view files in [demo/dags/](./demo/dags/).
