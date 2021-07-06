@@ -273,7 +273,7 @@ psql -U user -W -h localhost -f tests/fixtures/load_postgres.sql -d viewflow
 Before you can run the following command, you will have to have an Airflow SQLite database.
 Run
 
-`poetry run airflow db init`
+`poetry run airflow initdb`
 
 then,
 
@@ -282,7 +282,7 @@ then,
 Other useful commands include:
 
 ```bash
-poetry run airflow db reset # In case the database connection is set up incorrectly
+poetry run airflow resetdb # In case the database connection is set up incorrectly
 ```
 ## Viewflow architecture
 
