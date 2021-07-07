@@ -1,7 +1,7 @@
 /*
 ---
 owner: viewflow-team
-description: A table that enriched information on a user
+description: A table with enriched information of users
 fields:
   user_id: The user id
   xp: The user amount of XP

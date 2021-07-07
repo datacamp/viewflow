@@ -8,7 +8,7 @@ One of the major features of Viewflow is its ability to manage tasks' dependenci
 
 Currently, Viewflow supports SQL and Python views and PostgreSQL/Redshift as a destination. We will continue improving Viewflow by adding new view types (e.g., R, Jupyter Notebooks, ...) and destination (e.g., Snowflake, BigQuery, ...).
 
-Do you want more context on why we built and released Viewflow? Check out our announcement bog post: [*Data Scientists, don’t worry about data engineering: Viewflow has your back.*](https://medium.com/datacamp-engineering/viewflow-fe07353fa068)!
+Do you want more context on why we built and released Viewflow? Check out our announcement blog post: [*Data Scientists, don’t worry about data engineering: Viewflow has your back.*](https://medium.com/datacamp-engineering/viewflow-fe07353fa068)!
 
 ## Viewflow demo
 
@@ -101,7 +101,7 @@ select obj_description('viewflow_demo.user_enriched'::regclass) as view_descript
 +---------------------------------------------+
 | view_description                            |
 |---------------------------------------------|
-| A table that enriched information on a user |
+| A table with enriched information of users  |
 +---------------------------------------------+
 ```
 
@@ -128,8 +128,7 @@ select
 +--------------------------+-----------------------------------------------+
 ```
 
-And that's it! Congrats on running the demo :rocket: 
-If you want to play more with Viewflow, follow the installation instructions below.
+And that's it! Congrats on running the demo :rocket:  If you want to play more with Viewflow, follow the installation instructions below.
 
 ## Installation instructions
 
@@ -159,7 +158,7 @@ DAG = create_dags("./dags", globals(), "<views_schema_name>")
 This script is executed by Airflow. It calls the main Viewflow function that creates your DAGs. The first parameter is the directory in which your dag folders are located. The third parameter is the schema name in your data warehouse, where your views will be materialized.
 
 ### Create an Airflow connection to your destination
-Viewflow needs to know where to write the views. It uses an Airflow connection that is referred to in the view files. Currently, viewflow supports Postgres (or Redshift) data warehouses. Please look at the [Airflow documentation](https://airflow.apache.org/docs/apache-airflow/stable/howto/connection.html) to create a Postgres connection.
+Viewflow needs to know where to write the views. It uses an Airflow connection that is referred to in the view files. Currently, Viewflow supports Postgres (or Redshift) data warehouses. Please look at the [Airflow documentation](https://airflow.apache.org/docs/apache-airflow/stable/howto/connection.html) to create a Postgres connection.
 
 ### Create your DAG directories
 
@@ -178,11 +177,21 @@ Adapt the values of each element to what suits you. The `default_args` element c
 
 The `schedule_interval` and `start_date` elements are the Viewflow counterparts of Airflow's `schedule_interval` and `start_date`. 
 
-You can now add your SQL and Python files in this directory (see sections below). This will create in Airflow a new DAG called `my-first-viewflow-dag` that will be triggered every day at 6 AM UTC as of January 1, 2021. All failed tasks will be retried once.
+You can now add your SQL and Python files in this directory (see sections below). This will create a new DAG in Airflow called `my-first-viewflow-dag` that will be triggered every day at 6 AM UTC as of January 1, 2021. All failed tasks will be retried once.
+
+### View metadata
+
+Viewflow expects some metadata. Here are the fields that should be included in a `yml` format:
+
+* **owner**: The owner of the view (i.e., who is view responsible). The owner appears in Airflow and allows users to know who they should talk to if they have some questions about the view.
+* **description**: What is the view about. Viewflow uses this field as a view comment in the database. The description can be retrieved in SQL (see Section [*Query the views*](https://github.com/datacamp/viewflow#query-the-views)).
+* **fields (list)**: Description of each column of the view. Viewflow uses these fields as column comments in the database. The column descriptions can be retrieved in SQL (see Section [*Query the views*](https://github.com/datacamp/viewflow#query-the-views)).
+* **schema**: The name of the schema in which Viewflow creates the view. It's also used by Viewflow to create the dependencies.
+* **connection_id**: Airflow connection name used to connect to the database (See Section [*Create an Airflow connection to your destination*](https://github.com/datacamp/viewflow#create-an-airflow-connection-to-your-destination)).
 
 ### SQL views
 
-A SQL view is created by a SQL file. This SQL file must contain the SQL query (as a `SELECT` statement) of your view and some metadata about your view. Here's an example:
+A SQL view is created by a SQL file. This SQL file must contain the SQL query (as a `SELECT` statement) of your view and the view metadata. Here's an example:
 
 ```sql
 /* 
@@ -227,16 +236,6 @@ def python_view(db_engine):
 
 Please note that Viewflow expects the Python function that creates the view to have the parameter `db_engine` (used to connect to the database). You don't have to set `db_engine` anywhere. Viewflow takes care of setting this variable.
 
-### View metadata
-
-Viewflow expects some metadata. Here are the fields that should be included in a `yml` format:
-
-* **owner**: The owner of the view (i.e., who is view responsible). The owner appears in Airflow and allows users to know who they should talk to if they have some questions about the view.
-* **description**: What is the view about. Viewflow uses this field as a view comment in the database. The description can be retrieved in SQL (see Section [*Query the views*](https://github.com/datacamp/viewflow#query-the-views)).
-* **fields (list)**: Description of each column of the view. Viewflow uses these fields as column comments in the database. The column descriptions can be retrieved in SQL (see Section [*Query the views*](https://github.com/datacamp/viewflow#query-the-views)).
-* **schema**: The name of the schema in which Viewflow creates the view. It's also used by Viewflow to create the dependencies.
-* **connection_id**: Airflow connection name used to connect to the database (See Section [*Create an Airflow connection to your destination*](https://github.com/datacamp/viewflow#create-an-airflow-connection-to-your-destination)).
-
 # Contributing to Viewflow
 
 We welcome all sorts of contributions, be it new features, bug fixes or documentation, we encourage you to create a new PR. To create a new PR or to report new bugs, please read how to [contribute to Viewflow](CONTRIBUTION.md). 
@@ -271,7 +270,7 @@ psql -U user -W -h localhost -f tests/fixtures/load_postgres.sql -d viewflow
 
 ### Run Pytest
 
-Before you can run the following command, you will have to have an airflow sqlite database.
+Before you can run the following command, you will have to have an Airflow SQLite database.
 Run
 
 `poetry run airflow initdb`
