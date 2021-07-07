@@ -4,7 +4,7 @@ import logging
 import pandas as pd
 from datetime import date
 from airflow.hooks.postgres_hook import PostgresHook
-from airflow.operators import BaseOperator
+from airflow.models import BaseOperator
 
 
 def get_function(func_module_directory, func):
@@ -30,9 +30,10 @@ class PythonToPostgresOperator(BaseOperator):
         owner,
         schema,
         dependencies,
+        default_args={}
     ):
 
-        super(PythonToPostgresOperator, self).__init__(task_id=task_id, email=email)
+        super(PythonToPostgresOperator, self).__init__(task_id=task_id, email=email, default_args=default_args)
         self.conn_id = conn_id
         self.callable = callable
         self.python_dir = python_dir
