@@ -249,7 +249,14 @@ See https://python-poetry.org/docs/#osx-linux-bashonwindows-install-instructions
 
 ## Install the dependencies
 
-`poetry install`
+
+You can automatically install the required dependencies by running
+
+```bash
+poetry install
+```
+
+This will install Airflow 2 by default. If you want to configure Airflow version, edit the `pyproject.toml` file.
 
 ## Prepare your environment to run the tests
 
@@ -270,20 +277,32 @@ psql -U user -W -h localhost -f tests/fixtures/load_postgres.sql -d viewflow
 
 ### Run Pytest
 
-Before you can run the following command, you will have to have an Airflow SQLite database.
-Run
+Before you can continue, you will need to set up an Airflow SQLite database.
 
-`poetry run airflow initdb`
-
-then,
-
-`poetry run pytest`
-
-Other useful commands include:
 
 ```bash
-poetry run airflow resetdb # In case the database connection is set up incorrectly
+poetry run airflow db init # Airflow 2
+poetry run airflow initdb # Airflow 1.10
 ```
+
+Note: when you're using Airflow 1.10.12 and you get an `ImportError`, it can be helpful to refer to this [post](https://stackoverflow.com/questions/64891058/issue-on-airflow-initdb). E.g. for Python 3.8, reinstall Airflow with
+
+`pip install apache-airflow==1.10.12 --constraint "https://raw.githubusercontent.com/apache/airflow/constraints-1.10.12/constraints-3.8.txt"`
+
+After setting up the database, run
+
+```bash
+poetry run pytest
+```
+
+
+In case the database connection is set up incorrectly, run
+
+```bash
+poetry run airflow db reset # Airflow 2
+poetry run airflow resetdb # Airflow 1.10
+```
+
 ## Viewflow architecture
 
 We built Viewflow around three main components: the *parser*, the *adapter*, and the *dependency extractor*.

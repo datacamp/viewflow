@@ -18,7 +18,7 @@ sqlalchemy = "<1.4.0"
 
 # Option 1: apache-airflow >= 2.0.0
 # ------------------------------------
-apache-airflow = "2.1.1"
+apache-airflow = "^2.0.0"
 apache-airflow-providers-postgres = "^2.0.0"
 
 # Option 2: apache-airflow <= 1.10.15
