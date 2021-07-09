@@ -18,13 +18,13 @@ sqlalchemy = "<1.4.0"
 
 # Option 1: apache-airflow >= 2.0.0
 # ------------------------------------
-apache-airflow = "^2.0.0"
-apache-airflow-providers-postgres = "^2.0.0"
+# apache-airflow = "^2.0.0"
+# apache-airflow-providers-postgres = "^2.0.0"
 
 # Option 2: apache-airflow <= 1.10.15
 # ------------------------------------
-# apache-airflow = "1.10.12"
-# apache-airflow-backport-providers-postgres = "^2021.3.17"
+apache-airflow = "1.10.14"
+apache-airflow-backport-providers-postgres = "^2021.3.17"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.4.2"
