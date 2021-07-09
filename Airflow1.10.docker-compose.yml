@@ -15,14 +15,14 @@ services:
 
   scheduler:
     build:
-      context: ..
-      dockerfile: ./Airflow@1.10/Dockerfile
+      context: .
+      dockerfile: ./Airflow1.10.Dockerfile
     restart: always
     depends_on:
       - postgres
       - webserver
     env_file:
-      - ../demo/.env
+      - ./demo/.env
     ports:
       - "8793:8793"
     volumes:
@@ -38,21 +38,21 @@ services:
 
   webserver:
     build:
-      context: ..
-      dockerfile: ./Airflow@1.10/Dockerfile
+      context: .
+      dockerfile: ./Airflow1.10.Dockerfile
     hostname: webserver
     restart: always
     depends_on:
       - postgres
     env_file:
-      - ../demo/.env
+      - ./demo/.env
     volumes:
       - ./demo/dags:/opt/airflow/dags
       - ./demo/scripts:/opt/airflow/scripts
       - ./demo/airflow-logs:/opt/airflow/logs
     ports:
       - "8080:8080"
-    entrypoint: ["bash", "/Users/pietervanslambrouck/viewflow/demo/scripts/local-entrypoint-webserver.sh", "Airflow1.10"]
+    entrypoint: ["bash", "/viewflow/demo/scripts/local-entrypoint-webserver.sh", "Airflow1.10"]
     healthcheck:
       test: ["CMD-SHELL", "[ -f /usr/local/airflow/airflow-webserver.pid ]"]
       interval: 30s
