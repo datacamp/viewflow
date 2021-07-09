@@ -1,5 +1,6 @@
 alembic==1.5.8
 apache-airflow==1.10.14
+apache-airflow-backport-providers-postgres==2021.3.17
 apispec==1.3.3; python_version >= "3.6"
 argcomplete==1.12.2
 attrs==20.3.0

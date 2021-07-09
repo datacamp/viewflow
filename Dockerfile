@@ -9,6 +9,9 @@ RUN apt-get update -yqq \
 
 RUN pip install --upgrade pip
 
+# Symbolic link necessary for the apache-airflow-backport-providers-* packages
+RUN ln -s /usr/local/lib/python3.7/site-packages/airflow/providers /home/airflow/.local/lib/python3.7/site-packages/airflow/
+
 COPY ./requirements.txt /requirements.txt
 #RUN pip install -r /requirements.txt
 
