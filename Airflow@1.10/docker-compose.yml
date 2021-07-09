@@ -10,12 +10,13 @@ services:
     ports:
       - "5433:5432"
     volumes:
-        - ../demo/scripts/load_postgres.sql:/docker-entrypoint-initdb.d/load_postgres.sql
-        - ../demo/pg-data:/var/lib/postgresql/data
+        - ./demo/scripts/load_postgres.sql:/docker-entrypoint-initdb.d/load_postgres.sql
+        - ./demo/pg-data:/var/lib/postgresql/data
 
   scheduler:
     build:
-      context: ./
+      context: ..
+      dockerfile: ./Airflow@1.10/Dockerfile
     restart: always
     depends_on:
       - postgres
@@ -25,10 +26,10 @@ services:
     ports:
       - "8793:8793"
     volumes:
-      - ../demo/dags:/opt/airflow/dags
-      - ../demo/airflow-logs:/opt/airflow/logs
-      - ../demo/scripts:/opt/airflow/scripts
-    entrypoint: ./scripts/local-entrypoint-scheduler.sh Airflow1.10
+      - ./demo/dags:/opt/airflow/dags
+      - ./demo/airflow-logs:/opt/airflow/logs
+      - ./demo/scripts:/opt/airflow/scripts
+    entrypoint: ["bash", "/viewflow/demo/scripts/local-entrypoint-scheduler.sh"]
     healthcheck:
       test: ["CMD-SHELL", "[ -f /usr/local/airflow/airflow-webserver.pid ]"]
       interval: 30s
@@ -37,7 +38,8 @@ services:
 
   webserver:
     build:
-      context: ./
+      context: ..
+      dockerfile: ./Airflow@1.10/Dockerfile
     hostname: webserver
     restart: always
     depends_on:
@@ -45,12 +47,12 @@ services:
     env_file:
       - ../demo/.env
     volumes:
-      - ../demo/dags:/opt/airflow/dags
-      - ../demo/scripts:/opt/airflow/scripts
-      - ../demo/airflow-logs:/opt/airflow/logs
+      - ./demo/dags:/opt/airflow/dags
+      - ./demo/scripts:/opt/airflow/scripts
+      - ./demo/airflow-logs:/opt/airflow/logs
     ports:
       - "8080:8080"
-    entrypoint: ./scripts/local-entrypoint-webserver.sh
+    entrypoint: ["bash", "/Users/pietervanslambrouck/viewflow/demo/scripts/local-entrypoint-webserver.sh", "Airflow1.10"]
     healthcheck:
       test: ["CMD-SHELL", "[ -f /usr/local/airflow/airflow-webserver.pid ]"]
       interval: 30s
