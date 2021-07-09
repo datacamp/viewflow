@@ -12,12 +12,14 @@ RUN pip install --upgrade pip
 # Symbolic link necessary for the apache-airflow-backport-providers-* packages
 RUN ln -s /usr/local/lib/python3.7/site-packages/airflow/providers /home/airflow/.local/lib/python3.7/site-packages/airflow/
 
-COPY ./requirements.txt /requirements.txt
+COPY ./Airflow@1.10/requirements.txt /requirements.txt
 #RUN pip install -r /requirements.txt
 
 COPY ./viewflow /viewflow/viewflow
-COPY ./pyproject.toml /viewflow/
+COPY ./Airflow@1.10/pyproject.toml /viewflow/
 COPY ./README.md /viewflow/
+COPY ./demo /viewflow/demo
+
 RUN pip install /viewflow
 
 USER airflow

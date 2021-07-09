@@ -6,6 +6,8 @@ authors = ["Vincent Vankrunkelsven <vincent@datacamp.com>", "Ramnath Vaidyanatha
 readme = "README.md"
 
 [tool.poetry.dependencies]
+apache-airflow = "1.10.14"
+apache-airflow-backport-providers-postgres = "^2021.3.17"
 python = "^3.7"
 psycopg2 = "^2.8.5"
 numpy = "^1.19.1"
@@ -15,16 +17,6 @@ fsspec = "^0.8.0"
 ratelimit = "^2.2.1"
 networkx = "^2.5"
 sqlalchemy = "<1.4.0"
-
-# Option 1: apache-airflow >= 2.0.0
-# ------------------------------------
-# apache-airflow = "^2.0.0"
-# apache-airflow-providers-postgres = "^2.0.0"
-
-# Option 2: apache-airflow <= 1.10.15
-# ------------------------------------
-apache-airflow = "1.10.14"
-apache-airflow-backport-providers-postgres = "^2021.3.17"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.4.2"

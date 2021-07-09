@@ -1,0 +1,46 @@
+version: 2.1
+orbs:
+  datacamp-circleci: datacamp/central-ci@1
+
+jobs:
+  run-tests:    
+    docker: 
+      - image: circleci/python:3.7
+      - image: circleci/postgres:9.6.13
+        environment:
+          POSTGRES_PASSWORD: 'passw0rd'
+          POSTGRES_USER: 'user'
+          POSTGRES_DB: 'viewflow'
+    steps:     
+      - checkout 
+      - run: 
+          name: Load data into Postgres
+          command: |
+            sudo apt-get install postgresql
+            PGPASSWORD=passw0rd psql -U user -h 127.0.0.1 -f tests/fixtures/load_postgres.sql -d viewflow
+      - run:
+          name: Install Poetry
+          command: curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
+      - run:
+          name: Poetry Install
+          command: poetry install 
+      - run:
+          name: Init Airflow
+          command: poetry run airflow db init
+      - run:
+          name: Run the tests
+          command: poetry run pytest -vv --cov=viewflow
+      - run:
+          name: Upload to codecov
+          command: poetry run codecov
+
+workflows:
+    test:
+        jobs:
+        - run-tests:
+            context: org-global  
+            
+        - datacamp-circleci/scan:
+            context: org-global
+            requires:
+              - run-tests
