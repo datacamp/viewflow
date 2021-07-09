@@ -6,8 +6,8 @@ authors = ["Vincent Vankrunkelsven <vincent@datacamp.com>", "Ramnath Vaidyanatha
 readme = "README.md"
 
 [tool.poetry.dependencies]
-apache-airflow = "1.10.14"
-apache-airflow-backport-providers-postgres = "^2021.3.17"
+apache-airflow = "2.1.1"
+apache-airflow-providers-postgres = "^2.0.0"
 python = "^3.7"
 psycopg2 = "^2.8.5"
 numpy = "^1.19.1"
