@@ -18,7 +18,6 @@ COPY ./Airflow@1.10/requirements.txt /requirements.txt
 COPY ./viewflow /viewflow/viewflow
 COPY ./Airflow@1.10/pyproject.toml /viewflow/
 COPY ./README.md /viewflow/
-COPY ./demo /viewflow/demo
 
 RUN pip install /viewflow
 
