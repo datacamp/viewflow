@@ -7,16 +7,16 @@ RUN apt-get update -yqq \
     && apt-get install -y vim \
     && apt-get install -y git 
 
-RUN pip install --upgrade pip
-
 COPY ./Airflow@2/requirements.txt /requirements.txt
-#RUN pip install -r /requirements.txt
-
 COPY ./viewflow /viewflow/viewflow
 COPY ./Airflow@2/pyproject.toml /viewflow/
 COPY ./README.md /viewflow/
-COPY ./demo /viewflow/demo
-
-RUN pip install /viewflow
 
 USER airflow
+
+ENV PYTHONPATH /viewflow
+RUN pip install --upgrade pip
+RUN pip install -r /requirements.txt
+RUN pip install /viewflow
+
+
