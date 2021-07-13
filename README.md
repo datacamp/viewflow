@@ -287,7 +287,7 @@ poetry run airflow db init  # Airflow 2
 poetry run airflow initdb   # Airflow 1.10
 ```
 
-If running into problems, this [link](https://airflow.apache.org/docs/apache-airflow/stable/installation.html#troubleshooting) can be helpful. In particular, it's possible you get a `Symbol not found: _Py_GetArgcArgv` error. This is easily fixed by creating a Python virtual environment (as demonstrated in the [link](https://airflow.apache.org/docs/apache-airflow/stable/installation.html#troubleshooting)), activating this virtual environment and then running `poetry install` again.
+If running into problems, this [link](https://airflow.apache.org/docs/apache-airflow/stable/installation.html#troubleshooting) can be helpful. In particular, it's possible you get a `Symbol not found: _Py_GetArgcArgv` error. This is easily fixed by creating a Python virtual environment as demonstrated in the [link](https://airflow.apache.org/docs/apache-airflow/stable/installation.html#troubleshooting), activating this virtual environment and then running `poetry install` again.
 
 Note for Airflow 1.10.12: if you get an `ImportError`, it can be helpful to refer to this [post](https://stackoverflow.com/questions/64891058/issue-on-airflow-initdb).
 
