@@ -28,7 +28,7 @@ docker-compose -f Airflow2.docker-compose.yml up     # Airflow 2
 docker-compose -f Airflow1.10.docker-compose.yml up  # Airflow 1.10
 ```
 
-Go to your local Apache Airflow instance on [http://localhost:8080](http://localhost:8080). There are two DAGs called `viewflow-demo-1` and `viewflow-demo-2` (the UI is more fancy if you're using Airflow 2 :smile:):
+Go to your local Apache Airflow instance on [http://localhost:8080](http://localhost:8080). Notice how Viewflow automatically generated DAGs based on the example queries in `demo/dags/viewflow-demo-*`! There are two DAGs called `viewflow-demo-1` and `viewflow-demo-2` (the UI is more fancy if you're using Airflow 2 :smile:):
 
 <img src="./img/viewflow-demo-1.png" width="600">
 
@@ -183,7 +183,7 @@ You can now add your SQL and Python files in this directory (see sections below)
 
 ### View metadata
 
-Viewflow expects some metadata. Here are the fields that should be included in a `yml` format:
+Viewflow expects some metadata that must be included in the SQL and Python files (examples follow). Here are the fields that should be included in a `yml` format:
 
 * **owner**: The owner of the view (i.e., who is view responsible). The owner appears in Airflow and allows users to know who they should talk to if they have some questions about the view.
 * **description**: What is the view about. Viewflow uses this field as a view comment in the database. The description can be retrieved in SQL (see Section [*Query the views*](https://github.com/datacamp/viewflow#query-the-views)).
