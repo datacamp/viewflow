@@ -160,7 +160,9 @@ DAG = create_dags("./dags", globals(), "<views_schema_name>")
 This script is executed by Airflow. It calls the main Viewflow function that creates your DAGs. The first parameter is the directory in which your dag folders are located. The third parameter is the schema name in your data warehouse, where your views will be materialized.
 
 ### Create an Airflow connection to your destination
-Viewflow needs to know where to write the views. It uses an Airflow connection that is referred to in the view files. Currently, Viewflow supports Postgres (or Redshift) data warehouses. Please look at the [Airflow documentation](https://airflow.apache.org/docs/apache-airflow/stable/howto/connection.html) to create a Postgres connection.
+Viewflow needs to know where to write the views. It uses an Airflow connection that is referred to in the view files by specifying a `connection_id`. Currently, Viewflow supports Postgres (or Redshift) data warehouses. Please look at the [Airflow documentation](https://airflow.apache.org/docs/apache-airflow/stable/howto/connection.html) to create a Postgres connection.
+
+E.g. the demo's connection is managed using environmemt variables declared in `demo/.env`. This file is the `env_file` specified in the `docker-compose.yml`-files and it allows the scheduler and webserver containers to connect to the Postgres server.
 
 ### Create your DAG directories
 
