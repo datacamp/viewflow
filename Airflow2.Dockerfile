@@ -16,5 +16,4 @@ USER airflow
 
 ENV PYTHONPATH /viewflow
 RUN pip install --upgrade pip
-RUN pip install -r /requirements.txt
 RUN pip install /viewflow

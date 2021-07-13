@@ -103,17 +103,9 @@ def parse_task_file(
 
 def get_all_dependencies(task, schema_name):
     if task["type"] == "PostgresOperator":
-        dependencies = []
-        dependencies.extend(
-            get_sql_dependencies(task["content"], schema_name, task["dag"])
-        )
-        dependencies = [x["task"] for x in dependencies]
+        dependencies = get_sql_dependencies(task["content"], schema_name)
     elif task["type"] == "PythonToPostgresOperator":
-        dependencies = get_python_dependencies(
-            task["content"], schema_name, task["dag"]
-        )
-        dependencies = [x["task"] for x in dependencies]
-
+        dependencies = get_python_dependencies(task["content"], schema_name)
     else:
         dependencies = []
     return dependencies

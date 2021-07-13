@@ -15,7 +15,7 @@ def test_parse_sql():
             "technology": "The technology of the course",
         },
         "type": "PostgresOperator",
-        "content": "\nSELECT course_id, title, technology, exercice_title\n  FROM viewflow.courses c\n  JOIN viewflow.exercises e using (course_id) \n",
+        "content": "\nSELECT course_id, title, technology, exercise_title\n  FROM viewflow.courses c\n  JOIN viewflow.exercises e using (course_id) \n",
         "task_file_path": str(sql_file),
         "schema": "viewflow",
     }
