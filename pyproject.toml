@@ -1,6 +1,7 @@
 [tool.poetry]
 name = "viewflow"
 version = "0.1.0"
+license = "MIT"
 description = "Viewflow is an Airflow-based framework that allows data scientists to create data models without writing Airflow code."
 authors = ["Vincent Vankrunkelsven <vincent@datacamp.com>", "Ramnath Vaidyanathan <ramnath@datacamp.com>", "Gaëtan Podevijn <gaetan@datacamp.com>"]
 readme = "README.md"
