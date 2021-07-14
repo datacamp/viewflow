@@ -15,24 +15,24 @@ Do you want more context on why we built and released Viewflow? Check out our an
 We created a demo that shows how Viewflow works. The demo creates two DAGs: `viewflow-demo-1` and `viewflow-demo-2`. These DAGs create a total of four views in a local Postgres database. Check out the view files in [demo/dags/](./demo/dags/). Some of the following commands are different based on which Airflow version you're using. For new users, Airflow 2 is the best option. However, you can also run the demo using the older Airflow 1.10 version by using the indicated commands.
 
 ### Run the demo 
-We use `docker-compose` to instantiate an Apache Airflow instance and a Postgres database. The Airflow container and the Postgres container are defined in the [docker-compose.yml](./docker-compose.yml) file. The first time you want to run the demo, you will first have to build the Apache Airflow [docker image](Dockerfile) that embeds Viewflow:
+We use `docker-compose` to instantiate an Apache Airflow instance and a Postgres database. The Airflow container and the Postgres container are defined in the `docker-compose-airflow<version>.yml` files. The first time you want to run the demo, you will first have to build the Apache Airflow docker image that embeds Viewflow:
 
 ```sh
-docker-compose -f Airflow2.docker-compose.yml build     # Airflow 2
-docker-compose -f Airflow1.10.docker-compose.yml build  # Airflow 1.10
+docker-compose -f docker-compose-airflow2.yml build     # Airflow 2
+docker-compose -f docker-compose-airflow1.10.yml build  # Airflow 1.10
 ```
 
 Then run the docker containers:
 ```sh
-docker-compose -f Airflow2.docker-compose.yml up     # Airflow 2
-docker-compose -f Airflow1.10.docker-compose.yml up  # Airflow 1.10
+docker-compose -f docker-compose-airflow2.yml up     # Airflow 2
+docker-compose -f docker-compose-airflow1.10.yml up  # Airflow 1.10
 ```
 
-Go to your local Apache Airflow instance on [http://localhost:8080](http://localhost:8080). Notice how Viewflow automatically generated DAGs based on the example queries in `demo/dags/viewflow-demo-*`! There are two DAGs called `viewflow-demo-1` and `viewflow-demo-2` (the UI is more fancy if you're using Airflow 2 :smile:):
+Go to your local Apache Airflow instance on [http://localhost:8080](http://localhost:8080). There are two DAGs called `viewflow-demo-1` and `viewflow-demo-2`. Notice how Viewflow automatically generated these DAGs based on the example queries in the subfolders of [demo/dags/](./demo/dags/)!
 
-<img src="./img/viewflow-demo-1.png" width="600">
+<img src="./img/viewflow-demo-1.png" width="800">
 
-<img src="./img/viewflow-demo-2.png" width="600">
+<img src="./img/viewflow-demo-2.png" width="800">
 
 By default, the DAGs are disabled. Turn the DAGs on by clicking on the button `Off`. This will trigger the DAGs.
 
@@ -162,7 +162,7 @@ This script is executed by Airflow. It calls the main Viewflow function that cre
 ### Create an Airflow connection to your destination
 Viewflow needs to know where to write the views. It uses an Airflow connection that is referred to in the view files by specifying a `connection_id`. Currently, Viewflow supports Postgres (or Redshift) data warehouses. Please look at the [Airflow documentation](https://airflow.apache.org/docs/apache-airflow/stable/howto/connection.html) to create a Postgres connection.
 
-E.g. the demo's connection is managed using environmemt variables declared in `demo/.env`. This file is the `env_file` specified in the `docker-compose.yml`-files and it allows the scheduler and webserver containers to connect to the Postgres server.
+E.g. the demo's connection is managed using environmemt variables declared in [demo/.env](./demo/.env). This file is the `env_file` specified in the `docker-compose-airflow<version>.yml` files and it allows the scheduler and webserver containers to connect to the Postgres server.
 
 ### Create your DAG directories
 
@@ -260,7 +260,7 @@ You can automatically install the required dependencies by running
 poetry install
 ```
 
-By default, this will install Airflow 2 and its corresponding dependencies. If you want to use Airflow 1.10, copy the `Airflow@1.10/pyproject.toml` file to the main directory.
+By default, this will install Airflow 2 and its corresponding dependencies. If you want to use Airflow 1.10, copy the [Airflow@1.10/pyproject.toml](./Airflow@1.10/pyproject.toml) file to the main directory.
 
 ## Prepare your environment to run the tests
 

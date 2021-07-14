@@ -16,7 +16,7 @@ services:
   scheduler:
     build:
       context: .
-      dockerfile: ./Airflow1.10.Dockerfile
+      dockerfile: ./Dockerfile-airflow2
     restart: always
     depends_on:
       - postgres
@@ -39,7 +39,7 @@ services:
   webserver:
     build:
       context: .
-      dockerfile: ./Airflow1.10.Dockerfile
+      dockerfile: ./Dockerfile-airflow2
     hostname: webserver
     restart: always
     depends_on:
@@ -52,7 +52,7 @@ services:
       - ./demo/airflow-logs:/opt/airflow/logs
     ports:
       - "8080:8080"
-    entrypoint: ["bash", "./scripts/local-entrypoint-webserver.sh", "Airflow1.10"]
+    entrypoint: ["bash", "./scripts/local-entrypoint-webserver.sh", "Airflow2"]
     healthcheck:
       test: ["CMD-SHELL", "[ -f /usr/local/airflow/airflow-webserver.pid ]"]
       interval: 30s
