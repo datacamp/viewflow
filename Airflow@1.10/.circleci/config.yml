@@ -26,7 +26,7 @@ jobs:
           command: poetry install 
       - run:
           name: Init Airflow
-          command: poetry run airflow db init
+          command: poetry run airflow initdb
       - run:
           name: Run the tests
           command: poetry run pytest -vv --cov=viewflow

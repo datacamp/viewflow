@@ -12,27 +12,29 @@ Do you want more context on why we built and released Viewflow? Check out our an
 
 ## Viewflow demo
 
-We created a demo that shows how Viewflow works. The demo creates two DAGs: `viewflow-demo-1` and `viewflow-demo-2`. These DAGs create a total of four views in a local Postgres database. Check out the view files in [demo/dags/](./demo/dags/).
+We created a demo that shows how Viewflow works. The demo creates two DAGs: `viewflow-demo-1` and `viewflow-demo-2`. These DAGs create a total of four views in a local Postgres database. Check out the view files in [demo/dags/](./demo/dags/). Some of the following commands are different based on which Airflow version you're using. For new users, Airflow 2 is the best option. However, you can also run the demo using the older Airflow 1.10 version by using the indicated commands.
 
 ### Run the demo 
-We use `docker-compose` to instantiate an Apache Airflow instance and a Postgres database. The Airflow container and the Postgres container are defined in the [docker-compose.yml](./docker-compose.yml) file. The first time you want to run the demo, you will first have to build the Apache Airflow [docker image](Dockerfile) that embeds Viewflow:
+We use `docker-compose` to instantiate an Apache Airflow instance and a Postgres database. The Airflow container and the Postgres container are defined in the `docker-compose-airflow<version>.yml` files. The first time you want to run the demo, you will first have to build the Apache Airflow docker image that embeds Viewflow:
 
 ```sh
-docker-compose build
+docker-compose -f docker-compose-airflow2.yml build     # Airflow 2
+docker-compose -f docker-compose-airflow1.10.yml build  # Airflow 1.10
 ```
 
 Then run the docker containers:
 ```sh
-docker-compose up
+docker-compose -f docker-compose-airflow2.yml up     # Airflow 2
+docker-compose -f docker-compose-airflow1.10.yml up  # Airflow 1.10
 ```
 
-Go to your local Apache Airflow instance on [http://localhost:8080](http://localhost:8080). There are two DAGs called `viewflow-demo-1` and `viewflow-demo-2`:
+Go to your local Apache Airflow instance on [http://localhost:8080](http://localhost:8080). There are two DAGs called `viewflow-demo-1` and `viewflow-demo-2`. Notice how Viewflow automatically generated these DAGs based on the example queries in the subfolders of [demo/dags/](./demo/dags/)!
 
-<img src="./img/viewflow-demo-1.png" width="600">
+<img src="./img/viewflow-demo-1.png" width="800">
 
-<img src="./img/viewflow-demo-2.png" width="600">
+<img src="./img/viewflow-demo-2.png" width="800">
 
-By default, the DAGs are disabled. Turn the DAGs on by clicking on the button `Off`. It'll trigger the DAGs.
+By default, the DAGs are disabled. Turn the DAGs on by clicking on the button `Off`. This will trigger the DAGs.
 
 ### Query the views
 
@@ -158,7 +160,9 @@ DAG = create_dags("./dags", globals(), "<views_schema_name>")
 This script is executed by Airflow. It calls the main Viewflow function that creates your DAGs. The first parameter is the directory in which your dag folders are located. The third parameter is the schema name in your data warehouse, where your views will be materialized.
 
 ### Create an Airflow connection to your destination
-Viewflow needs to know where to write the views. It uses an Airflow connection that is referred to in the view files. Currently, Viewflow supports Postgres (or Redshift) data warehouses. Please look at the [Airflow documentation](https://airflow.apache.org/docs/apache-airflow/stable/howto/connection.html) to create a Postgres connection.
+Viewflow needs to know where to write the views. It uses an Airflow connection that is referred to in the view files by specifying a `connection_id`. Currently, Viewflow supports Postgres (or Redshift) data warehouses. Please look at the [Airflow documentation](https://airflow.apache.org/docs/apache-airflow/stable/howto/connection.html) to create a Postgres connection.
+
+E.g. the demo's connection is managed using environmemt variables declared in [demo/.env](./demo/.env). This file is the `env_file` specified in the `docker-compose-airflow<version>.yml` files and it allows the scheduler and webserver containers to connect to the Postgres server.
 
 ### Create your DAG directories
 
@@ -181,7 +185,7 @@ You can now add your SQL and Python files in this directory (see sections below)
 
 ### View metadata
 
-Viewflow expects some metadata. Here are the fields that should be included in a `yml` format:
+Viewflow expects some metadata that must be included in the SQL and Python files (examples follow). Here are the fields that should be included in a `yml` format:
 
 * **owner**: The owner of the view (i.e., who is view responsible). The owner appears in Airflow and allows users to know who they should talk to if they have some questions about the view.
 * **description**: What is the view about. Viewflow uses this field as a view comment in the database. The description can be retrieved in SQL (see Section [*Query the views*](https://github.com/datacamp/viewflow#query-the-views)).
@@ -249,7 +253,14 @@ See https://python-poetry.org/docs/#osx-linux-bashonwindows-install-instructions
 
 ## Install the dependencies
 
-`poetry install`
+
+You can automatically install the required dependencies by running
+
+```bash
+poetry install
+```
+
+By default, this will install Airflow 2 and its corresponding dependencies. If you want to use Airflow 1.10, copy the [Airflow@1.10/pyproject.toml](./Airflow@1.10/pyproject.toml) file to the main directory.
 
 ## Prepare your environment to run the tests
 
@@ -270,20 +281,32 @@ psql -U user -W -h localhost -f tests/fixtures/load_postgres.sql -d viewflow
 
 ### Run Pytest
 
-Before you can run the following command, you will have to have an Airflow SQLite database.
-Run
+Before you can continue, you will need to set up an Airflow SQLite database.
 
-`poetry run airflow initdb`
-
-then,
-
-`poetry run pytest`
-
-Other useful commands include:
 
 ```bash
-poetry run airflow resetdb # In case the database connection is set up incorrectly
+poetry run airflow db init  # Airflow 2
+poetry run airflow initdb   # Airflow 1.10
 ```
+
+If running into problems, this [link](https://airflow.apache.org/docs/apache-airflow/stable/installation.html#troubleshooting) can be helpful. In particular, it's possible you get a `Symbol not found: _Py_GetArgcArgv` error. This is easily fixed by creating a Python virtual environment as demonstrated in the [link](https://airflow.apache.org/docs/apache-airflow/stable/installation.html#troubleshooting), activating this virtual environment and then running `poetry install` again.
+
+Note for Airflow 1.10.12: if you get an `ImportError`, it can be helpful to refer to this [post](https://stackoverflow.com/questions/64891058/issue-on-airflow-initdb).
+
+After setting up the database, run
+
+```bash
+poetry run pytest
+```
+
+
+In case the database connection is set up incorrectly, run
+
+```bash
+poetry run airflow db reset  # Airflow 2
+poetry run airflow resetdb   # Airflow 1.10
+```
+
 ## Viewflow architecture
 
 We built Viewflow around three main components: the *parser*, the *adapter*, and the *dependency extractor*.

@@ -2,7 +2,7 @@ import os
 from jinja2 import Template
 from pathlib import Path
 from typing import Dict, Any
-from airflow.operators.postgres_operator import PostgresOperator  # type: ignore
+from airflow.providers.postgres.operators.postgres import PostgresOperator # type: ignore
 from airflow.models import BaseOperator
 from ..post_execute_monkey_patch import monkey_post_execute
 
