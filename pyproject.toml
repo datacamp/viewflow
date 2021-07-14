@@ -18,6 +18,7 @@ fsspec = "^0.8.0"
 ratelimit = "^2.2.1"
 networkx = "^2.5"
 sqlalchemy = "<1.4.0"
+frontmatter = "^3.0.7"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.4.2"

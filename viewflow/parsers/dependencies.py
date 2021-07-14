@@ -31,3 +31,27 @@ def get_python_dependencies(python_content, schema_name):
             view = re.sub(r"['|\"|\s]", "", view)
             views_used.append(view)
     return list(set(views_used))
+
+
+# TODO clean up this code, why include argument task_name?
+def get_rmd_dependencies(rmd_content, schema_name, task_name):
+    """Get dependencies from Rmd file"""
+    rmd_content = rmd_content.lower()
+    rmd_content = re.sub(re.compile(r"\/\*.*\*\/", re.MULTILINE), "", rmd_content)
+    rmd_content = re.sub("--.*\n", "", rmd_content)
+    rmd_content = re.sub(re.compile(r"[\s]+", re.MULTILINE), " ", rmd_content)
+    view_matches = re.finditer(
+        f"[^a-z\d_\.](tbl_{schema_name}\_[a-z\d_\.]*)", rmd_content
+    )
+    views_used = [
+        v.replace(f"tbl_{schema_name}_", "")
+        for v in set(m.group(1) for m in view_matches)
+        if v != task_name
+    ]
+    view_matches_2 = re.finditer(
+        f"[^a-z\d_\.]{schema_name}\.([a-z\d_\.]*)", rmd_content
+    )
+    views_used_2 = [
+        v for v in set(m.group(1) for m in view_matches_2) if v != task_name
+    ]
+    return list(set(views_used + views_used_2))

@@ -13,13 +13,19 @@ from typing import Dict, Any, TypeVar
 from airflow import DAG  # type: ignore
 from airflow.models import BaseOperator  # type: ignore
 from airflow.sensors.external_task_sensor import ExternalTaskSensor
+
 from .adapters.postgresql import postgres_adapter
 from .adapters.python import python_adapter
+from .adapters.rmd import rmd_adapter
+
 from .parsers.parse_yml import parse_yml
 from .parsers.parse_sql import parse_sql
 from .parsers.parse_python import parse_python
+from .parsers.parse_rmd import parse_rmd
+
 from .parsers.dependencies import get_sql_dependencies
 from .parsers.dependencies import get_python_dependencies
+from .parsers.dependencies import get_rmd_dependencies
 
 
 O = TypeVar("O", bound=BaseOperator)
@@ -28,9 +34,10 @@ DAG_CONFIG_FILE = "config.yml"
 OPERATORS = {
     "PostgresOperator": postgres_adapter.create_task,
     "PythonToPostgresOperator": python_adapter.create_task,
+    "RmdOperator": rmd_adapter.create_task,
 }
 
-PARSERS = {".yml": parse_yml, ".sql": parse_sql, ".py": parse_python}
+PARSERS = {".yml": parse_yml, ".sql": parse_sql, ".py": parse_python, ".rmd": parse_rmd}
 
 SQL_OPERATORS = ["PostgresOperator"]
 
@@ -106,6 +113,8 @@ def get_all_dependencies(task, schema_name):
         dependencies = get_sql_dependencies(task["content"], schema_name)
     elif task["type"] == "PythonToPostgresOperator":
         dependencies = get_python_dependencies(task["content"], schema_name)
+    elif task["type"] == "RmdOperator":
+        dependencies = get_rmd_dependencies(task["content"], schema_name, task["task_id"])
     else:
         dependencies = []
     return dependencies
