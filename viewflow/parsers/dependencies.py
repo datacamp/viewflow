@@ -33,7 +33,6 @@ def get_python_dependencies(python_content, schema_name):
     return list(set(views_used))
 
 
-# TODO clean up this code, why include argument task_name?
 def get_rmd_dependencies(rmd_content, schema_name, task_name):
     """Get dependencies from Rmd file"""
     rmd_content = rmd_content.lower()

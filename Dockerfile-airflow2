@@ -16,4 +16,5 @@ USER airflow
 
 ENV PYTHONPATH /viewflow
 RUN pip install --upgrade pip
+RUN pip install rpy2
 RUN pip install /viewflow
