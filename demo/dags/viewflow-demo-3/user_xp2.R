@@ -11,9 +11,9 @@
 
 # FETCH DATA
 # TODO automate this process
-# Libraries: DBI, RPostgres, dplyr
+# Libraries: DBI, RPostgres (dplyr for user's script)
 library(DBI)
-library(dplyr)
+
 
 con <- dbConnect(RPostgres::Postgres(),
     dbname = 'airflow', 
@@ -31,8 +31,12 @@ dbDisconnect(con)
 
 
 # ACTUAL CREATION OF VIEW
+library(dplyr)
 temp = select(merge(viewflow_raw.users, viewflow_raw.user_course, by.x='id', by.y='user_id', all.x=TRUE), c('id', 'course_id'))
 names(temp)[names(temp) == 'id'] <- 'user_id'
 user_all_xp = select(merge(temp, viewflow_raw.courses, by.x='course_id', by.y='id'), c('user_id', 'xp'))
-
 user_xp2 = aggregate(xp ~ user_id, user_all_xp, sum)
+
+
+# MATERIALIZE THE VIEW
+dbWriteTable(con, name = Id(schema = 'viewflow_demo', table = 'user_xp2'), user_xp2, overwrite=TRUE)

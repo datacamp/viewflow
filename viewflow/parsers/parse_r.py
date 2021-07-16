@@ -14,6 +14,7 @@ def parse_r(file: pathlib.Path) -> Dict[str, Any]:
         "type": "ROperator",
         "content": "\n".join(content[0 : max(l[0]-1,0)] + content[(l[1] + 2) :]),
         "task_file_path": str(file),
+        "dependencies": [] # TODO extract dependencies
     }
     task_config.update(extras)
     return task_config

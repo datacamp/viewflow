@@ -1,43 +1,68 @@
-import os
 import logging
-import pandas as pd
-from datetime import date
+import re
 from airflow.hooks.postgres_hook import PostgresHook
-from airflow.models import BaseOperator
+from airflow.models import BashOperator
 
 
-import rpy2.robjects as robjects
-from rpy2.robjects import pandas2ri
-from rpy2.robjects.conversion import localconverter
-from rpy2.rinterface import RRuntimeError
-
-class ROperator(BaseOperator):
+class ROperator(BashOperator):
 
     def __init__(
         self,
         conn_id,
         task_id,
         email,
-        callable,
-        python_dir,
         description,
         fields,
-        name,
+        task_file_path,
+        content,
         owner,
         schema,
         dependencies,
         default_args={}
     ):
 
-        super(ROperator, self).__init__(task_id=task_id, email=email, default_args=default_args)
         self.conn_id = conn_id
-        self.callable = callable
-        self.python_dir = python_dir
+        self.content = content
         self.dependencies = dependencies
-        self.table = f"{schema}.{name}"
         self.schema = schema
+        self.table_name = re.sub(r".[rR]$", "", task_file_path.split("/")[-1])
+        self.table = f"{schema}.{self.table_name}"
+
+        R_full_script = self.generateFullScript()
+
+        super().__init__(
+            bash_command="Rscript -e '" + R_full_script + "'",
+            task_id=task_id,
+            email=email,
+            default_args=default_args
+        )
 
         self.doc_sql = f"COMMENT ON TABLE {self.table} IS '{description.strip()} Owned by {owner}';"
         for field_name, field_value in fields.items():
             self.doc_sql += f"""COMMENT ON COLUMN {self.table}."{field_name}" IS '{field_value.strip()}';"""
 
+
+    def generateFullScript(self):
+        """Extend user-provided R script to the full script.
+        The full script is composed of
+            1) Connect to the database and read the tables the script depends on
+            2) The user-provided script which creates a new table
+            3) Materialize the new table in the database"""
+        full_script = self.content
+        return re.sub("'", "\"", full_script)
+
+
+    def execute(self, context):
+        super().execute(context)
+        self.run_sql(self.doc_sql)
+
+    
+    def run_sql(self, query):
+        con = PostgresHook(postgres_conn_id=self.conn_id).get_conn()
+        try:
+            con.cursor().execute(query)
+            con.commit()
+        except Exception as e:
+            logging.error(e)
+            con.rollback()
+            raise
