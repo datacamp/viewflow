@@ -48,6 +48,19 @@ class ROperator(BashOperator):
             1) Connect to the database and read the tables the script depends on
             2) The user-provided script which creates a new table
             3) Materialize the new table in the database"""
+        
+        conn = self.get_db_connection()
+
+        R_make_connection = f'''
+        conn <- dbConnect(RPostgres::Postgres(),
+            dbname = {conn.info.dbname}, 
+            host = 'localhost',
+            port = {conn.info.port},
+            user = {conn.info.user},
+            password = {conn.info.password},
+        )
+        '''
+        
         full_script = self.content
         return re.sub("'", "\"", full_script)
 
@@ -56,9 +69,11 @@ class ROperator(BashOperator):
         super().execute(context)
         self.run_sql(self.doc_sql)
 
+    def get_db_connection(self):
+        return PostgresHook(postgres_conn_id=self.conn_id).get_conn()
     
     def run_sql(self, query):
-        con = PostgresHook(postgres_conn_id=self.conn_id).get_conn()
+        con = self.get_db_connection()
         try:
             con.cursor().execute(query)
             con.commit()

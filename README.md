@@ -38,10 +38,10 @@ By default, the DAGs are disabled. Turn the DAGs on by clicking on the button `O
 
 ### Query the views
 
-Once the DAGs have run and all tasks completed, you can query the views created by Viewflow in the local Postgres database created by Docker. You can use any Postgres client (note that Postgres is running locally on port `5433`):
+Once the DAGs have run and all tasks completed, you can query the views created by Viewflow in the local Postgres database created by Docker. You can use any Postgres client (note that Postgres is running locally on port `5432`):
 
 ```sh
-psql -h localhost -p 5433 -U airflow -d airflow
+psql -h localhost -p 5432 -U airflow -d airflow
 ```
 
 Use `airflow` when `psql` asks you for the user password.

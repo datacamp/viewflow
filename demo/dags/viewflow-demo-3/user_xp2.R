@@ -18,7 +18,7 @@ library(DBI)
 con <- dbConnect(RPostgres::Postgres(),
     dbname = 'airflow', 
     host = 'localhost',
-    port = 5433,
+    port = 5432,
     user = 'airflow',
     password = 'airflow',
 )
