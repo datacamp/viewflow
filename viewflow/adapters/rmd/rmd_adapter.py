@@ -3,8 +3,7 @@ import airflow
 
 from ..post_execute_monkey_patch import monkey_post_execute
 
-# TODO change to Rmd operator
-from viewflow.operators.ecs_operator import ECSOperator  # type: ignore
+# TODO change viewflow.operators.ecs_operator to Rmd operator
 from viewflow.connectors.pandas_redshift import PandasRedshiftConnector  # type: ignore
 from pathlib import Path
 from datetime import timedelta
@@ -14,7 +13,11 @@ from os import getenv
 from typing import Dict, Any
 
 
-def create_task(parsed_task: Dict[str, Any]) -> ECSOperator:
+def create_task(parsed_task: Dict[str, Any]):
+    
+    from airflow.operators.dummy import DummyOperator
+    ecs_task = DummyOperator()
+    """
     ecs_task = ECSOperator(
         task_id=parsed_task["task_id"],
         email=parsed_task.get("owner"),
@@ -50,7 +53,7 @@ def create_task(parsed_task: Dict[str, Any]) -> ECSOperator:
         },
         launch_type="FARGATE",
         retry_exponential_backoff=True,
-    )
+    ) """
 
     ecs_task.schema_name = parsed_task.get("schema")
     ecs_task.post_execute = monkey_post_execute.__get__(ecs_task, BaseOperator)

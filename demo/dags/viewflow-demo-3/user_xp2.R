@@ -27,8 +27,6 @@ viewflow_raw.users =       dbReadTable(con, name = Id(schema = 'viewflow_raw', t
 viewflow_raw.user_course = dbReadTable(con, name = Id(schema = 'viewflow_raw', table = 'user_course'))
 viewflow_raw.courses =     dbReadTable(con, name = Id(schema = 'viewflow_raw', table = 'courses'))
 
-dbDisconnect(con)
-
 
 # ACTUAL CREATION OF VIEW
 library(dplyr)
@@ -40,3 +38,5 @@ user_xp2 = aggregate(xp ~ user_id, user_all_xp, sum)
 
 # MATERIALIZE THE VIEW
 dbWriteTable(con, name = Id(schema = 'viewflow_demo', table = 'user_xp2'), user_xp2, overwrite=TRUE)
+
+dbDisconnect(con)
