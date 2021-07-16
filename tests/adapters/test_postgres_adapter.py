@@ -8,7 +8,7 @@ from viewflow.create_dag import ParseContext
 
 from airflow import DAG
 from airflow.models import TaskInstance, Connection
-from airflow.hooks.postgres_hook import PostgresHook
+from airflow.providers.postgres.hooks.postgres import PostgresHook
 from airflow import settings
 from airflow.utils import db
 

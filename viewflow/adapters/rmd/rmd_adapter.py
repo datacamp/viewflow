@@ -4,7 +4,7 @@ import airflow
 from ..post_execute_monkey_patch import monkey_post_execute
 
 # TODO change viewflow.operators.ecs_operator to Rmd operator
-from viewflow.connectors.pandas_redshift import PandasRedshiftConnector  # type: ignore
+
 from pathlib import Path
 from datetime import timedelta
 from airflow.models import BaseOperator

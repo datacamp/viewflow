@@ -16,7 +16,6 @@ COPY ./Airflow@1.10/pyproject.toml /viewflow/
 COPY ./README.md /viewflow/
 
 RUN pip install --upgrade pip
-RUN pip install rpy2
 RUN pip install /viewflow
 
 USER airflow
