@@ -22,6 +22,7 @@ from .parsers.parse_yml import parse_yml
 from .parsers.parse_sql import parse_sql
 from .parsers.parse_python import parse_python
 from .parsers.parse_rmd import parse_rmd
+from .parsers.parse_r import parse_r
 
 from .parsers.dependencies import get_sql_dependencies
 from .parsers.dependencies import get_python_dependencies
@@ -37,7 +38,7 @@ OPERATORS = {
     "RmdOperator": rmd_adapter.create_task,
 }
 
-PARSERS = {".yml": parse_yml, ".sql": parse_sql, ".py": parse_python, ".rmd": parse_rmd}
+PARSERS = {".yml": parse_yml, ".sql": parse_sql, ".py": parse_python, ".rmd": parse_rmd, ".r": parse_r}
 
 SQL_OPERATORS = ["PostgresOperator"]
 
