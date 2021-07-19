@@ -17,6 +17,7 @@ from airflow.sensors.external_task_sensor import ExternalTaskSensor
 from .adapters.postgresql import postgres_adapter
 from .adapters.python import python_adapter
 from .adapters.rmd import rmd_adapter
+from .adapters.r import r_adapter
 
 from .parsers.parse_yml import parse_yml
 from .parsers.parse_sql import parse_sql
@@ -36,6 +37,7 @@ OPERATORS = {
     "PostgresOperator": postgres_adapter.create_task,
     "PythonToPostgresOperator": python_adapter.create_task,
     "RmdOperator": rmd_adapter.create_task,
+    "ROperator": r_adapter.create_task
 }
 
 PARSERS = {".yml": parse_yml, ".sql": parse_sql, ".py": parse_python, ".rmd": parse_rmd, ".r": parse_r}

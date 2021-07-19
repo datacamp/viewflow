@@ -1,7 +1,9 @@
 import logging
 import re
 from airflow.providers.postgres.hooks.postgres import PostgresHook
-from airflow.models import BashOperator
+from airflow.operators.bash import BashOperator
+# Airflow 1.10
+# from airflow.operators.bash_operator import BashOperator
 
 
 class ROperator(BashOperator):
@@ -44,10 +46,10 @@ class ROperator(BashOperator):
 
     def generateFullScript(self):
         """Extend user-provided R script to the full script.
-        The full script is composed of
-            1) Connect to the database and read the tables the script depends on
+        The full script is composed of the following parts:
+            1) Connecting to the database and reading the tables the script depends on
             2) The user-provided script which creates a new table
-            3) Materialize the new table in the database"""
+            3) Materializing the new table in the database"""
         
         conn = self.get_db_connection()
 
