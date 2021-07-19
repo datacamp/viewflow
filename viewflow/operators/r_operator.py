@@ -1,9 +1,7 @@
 import logging
 import re
 from airflow.providers.postgres.hooks.postgres import PostgresHook
-from airflow.operators.bash import BashOperator
-# Airflow 1.10
-# from airflow.operators.bash_operator import BashOperator
+from airflow.operators.bash_operator import BashOperator
 
 
 class ROperator(BashOperator):
@@ -39,7 +37,7 @@ class ROperator(BashOperator):
             default_args=default_args
         )
 
-        self.doc_sql = f"COMMENT ON TABLE {self.table} IS '{description.strip()} Owned by {owner}';"
+        self.doc_sql = f"COMMENT ON TABLE {self.table} IS '{description.strip()}\nOwned by {owner}';"
         for field_name, field_value in fields.items():
             self.doc_sql += f"""COMMENT ON COLUMN {self.table}."{field_name}" IS '{field_value.strip()}';"""
 
