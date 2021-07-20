@@ -6,6 +6,7 @@
 #   xp: The sum of XP
 # schema: viewflow_demo
 # connection_id: postgres_demo
+# dependency_function: TEST_function
 # ---
 
 

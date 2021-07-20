@@ -12,7 +12,7 @@ from dataclasses import dataclass
 from typing import Dict, Any, TypeVar
 from airflow import DAG  # type: ignore
 from airflow.models import BaseOperator  # type: ignore
-from airflow.sensors.external_task_sensor import ExternalTaskSensor
+from airflow.sensors.external_task_sensor import ExternalTaskSensor  # type: ignore
 
 from .adapters.postgresql import postgres_adapter
 from .adapters.python import python_adapter
@@ -28,6 +28,7 @@ from .parsers.parse_r import parse_r
 from .parsers.dependencies import get_sql_dependencies
 from .parsers.dependencies import get_python_dependencies
 from .parsers.dependencies import get_rmd_dependencies
+from .parsers.dependencies import get_r_dependencies
 
 
 O = TypeVar("O", bound=BaseOperator)
@@ -118,6 +119,8 @@ def get_all_dependencies(task, schema_name):
         dependencies = get_python_dependencies(task["content"], schema_name)
     elif task["type"] == "RmdOperator":
         dependencies = get_rmd_dependencies(task["content"], schema_name, task["task_id"])
+    elif task["type"] == "ROperator":
+        dependencies = list(get_r_dependencies(task["content"], schema_name, task["dependency_function"]).values())
     else:
         dependencies = []
     return dependencies
@@ -215,6 +218,7 @@ def enrich_dags_config(dags_parsed, schema_name):
                     "task_id": task["task_id"],
                     "type": task["type"],
                     "content": task.get("content", ""),
+                    "dependency_function": task.get("dependency_function"),
                     "disable_implicit_dependencies": task.get(
                         "disable_implicit_dependencies"
                     ),
