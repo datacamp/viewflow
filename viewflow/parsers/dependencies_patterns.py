@@ -11,9 +11,15 @@ def get_dependencies_default(r_content, schema_name) -> Dict[str, str]:
         res[m.group(1)] = m.group(2)
     return res
 
-# TODO remove (also from R script)
-def TEST_function(r_content, schema_name) -> Dict[str, str]:
-    return get_dependencies_default(r_content, schema_name)
+
+def custom_get_dependencies(r_content, schema_name) -> Dict[str, str]:
+    """Write a custom function to extract the tables from r_content, the code should be similar to get_dependencies_default.
+    This method is activated by adding a new line to the metadata in the R script: 'dependency_function: custom_get_dependencies'
+    A dictionary must be returned which maps the table name that is used in r_content to the table under the given schema.
+    E.g. if you choose to refer to the 'users' table in the 'viewflow_raw' schema as 'table.viewflow_raw.users',
+    then the dictionary must contain ('table.viewflow_raw.users' -> 'users')"""
+    return dict()
+
 
 
 # TODO return dict?

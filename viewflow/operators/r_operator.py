@@ -1,5 +1,6 @@
 import logging
-import re
+import os
+from pathlib import Path
 from typing import List
 from textwrap import dedent
 from airflow.providers.postgres.hooks.postgres import PostgresHook
@@ -22,7 +23,6 @@ class ROperator(BashOperator):
         email,
         description,
         fields,
-        task_file_path,
         content,
         owner,
         schema,
@@ -34,14 +34,15 @@ class ROperator(BashOperator):
         self.task_id = task_id
         self.content = content
         self.schema = schema
-        self.table_name = re.sub(r".[rR]$", "", task_file_path.split("/")[-1])
-        self.table = f"{schema}.{self.table_name}"
+        self.table = f"{schema}.{self.task_id}"
         self.dependency_function = dependency_function
 
-        R_full_script = self.generateFullScript()
+        self.R_full_script = self.generateFullScript()
+        
+        file_name = self.saveFullScript()
 
         super().__init__(
-            bash_command="Rscript -e '" + R_full_script + "'",
+            bash_command=f"Rscript {file_name}",
             task_id=task_id,
             email=email,
             default_args=default_args
@@ -59,35 +60,47 @@ class ROperator(BashOperator):
             2) The user-provided script which creates a new table
             3) Materializing the new table in the database"""
         
-        # TODO use self.content to determine which tables this script depends on
-        # first use conn to list all schema names?
-        # Then use get_r_dependencies to determine dependencies for each schema
-
+        # Connecting to the database
         conn = self.get_db_connection()
         R_script = dedent(f'''
         library(DBI)
         conn <- dbConnect(RPostgres::Postgres(),
             dbname = '{conn.info.dbname}', 
-            host = 'localhost',
+            host = '{conn.info.host}',
             port = {conn.info.port},
             user = '{conn.info.user}',
             password = '{conn.info.password}',
         )
         ''')
 
+        # Reading the necessary tables for each schema
         pg_engine: Engine = self.get_db_engine()
         pg_inspector: Inspector = inspect(pg_engine)
         schema_names: List[str] = pg_inspector.get_schema_names()
-        # Read necessary tables for each schema
         for schema in schema_names:
-            dependencies = get_r_dependencies(self.content, self.schema, self.dependency_function)
+            dependencies = get_r_dependencies(self.content, schema, self.dependency_function)
             for script_name, table_name in dependencies.items():
                 R_script += f"{script_name} = dbReadTable(conn, name = Id(schema = '{schema}', table = '{table_name}'))\n"
 
+        # The user-provided script which creates a new table named self.task_id
+        R_script += self.content
 
-        full_script = self.content
-        return re.sub("'", "\"", full_script)
+        # Materializing the new table in the database
+        R_script += dedent(f"""
+        dbWriteTable(conn, name = Id(schema = '{self.schema}', table = '{self.task_id}'), {self.task_id}, overwrite=TRUE)
+        dbDisconnect(conn)
+        """)
+        return R_script
+    
 
+    def saveFullScript(self):
+        """Save self.R_full_script and return the filename"""
+        folder = os.environ["AIRFLOW_HOME"] + "/data"
+        file_name = folder + f"/{self.schema}.{self.task_id}_GENERATED.R"
+        Path(folder).mkdir(exist_ok=True)
+        with open(file_name, "w") as f:
+            f.write(self.R_full_script)
+        return file_name
 
     def execute(self, context):
         super().execute(context)

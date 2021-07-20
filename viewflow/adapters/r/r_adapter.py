@@ -19,7 +19,6 @@ def create_task(parsed_task: Dict[str, Any]):
         email=parsed_task.get("owner"),
         description= parsed_task["description"],
         fields=parsed_task["fields"],
-        task_file_path=parsed_task["task_file_path"],
         content=parsed_task["content"],
         owner=parsed_task.get("owner"),
         schema=parsed_task["schema"],
