@@ -1,0 +1,38 @@
+---
+owner: viewflow-team
+description: Provide the top 3 users with the most XP.
+fields:
+  user_id: The user id
+  xp: The user amount of XP
+schema: viewflow_demo
+connection_id: postgres_demo
+---
+
+## Dependencies
+The new view is based on the user_xp table. We can simply use this table in the default format: `<schema_name>.<table_name>`
+A custom format for referencing tables can be configured by creating a new function in
+`viewflow/parsers/dependencies_r_patterns.py` and adding a new line to the metadata in this file.
+(This line would look like `dependency_function: your_custom_function`)
+By mentioning a table in the specified format, Viewflow will automatically make sure that:
+1. The script is only executed after all tasks on which this task depends are finished
+2. This table is correctly read from the database.
+
+```{r rename_view}
+user_xp <- viewflow_demo.user_xp
+```
+
+That's all there is to it! You simply refer to the tables you want to use and Viewflow handles the rest!
+Note that the previous line of R code is optional, you can directly utilize the table without renaming.
+
+
+## View creation
+A view is materialized with the 3 users having most XP.
+
+```{r create_view}
+top_3_user_xp_duplicate <- head(user_xp[order(user_xp$xp, decreasing=TRUE),], n = 3)
+```
+
+
+## View materialization
+Viewflow will automatically materialize the view `top_3_user_xp_duplicate` in the database.
+The new view must be assigned to an object with exactly the same name as the filename (excluding the file extension).

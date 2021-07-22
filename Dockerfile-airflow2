@@ -9,6 +9,7 @@ RUN apt-get update -yqq \
     && apt-get install -y r-base \
     && Rscript -e "install.packages('DBI')" \
     && Rscript -e "install.packages('RPostgres')" \
+    && Rscript -e "install.packages('rmarkdown')" \
     && Rscript -e "install.packages('dplyr')"
     
 

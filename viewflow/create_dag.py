@@ -3,7 +3,7 @@ import yaml
 import logging
 import pickle
 import re
-import networkx as nx
+import networkx as nx  # type: ignore
 import random
 from collections import namedtuple
 from pathlib import Path
@@ -27,8 +27,9 @@ from .parsers.parse_r import parse_r
 
 from .parsers.dependencies import get_sql_dependencies
 from .parsers.dependencies import get_python_dependencies
-from .parsers.dependencies import get_rmd_dependencies
 from .parsers.dependencies import get_r_dependencies
+
+from .operators.rmd_operator import extractR
 
 
 O = TypeVar("O", bound=BaseOperator)
@@ -118,7 +119,8 @@ def get_all_dependencies(task, schema_name):
     elif task["type"] == "PythonToPostgresOperator":
         dependencies = get_python_dependencies(task["content"], schema_name)
     elif task["type"] == "RmdOperator":
-        dependencies = get_rmd_dependencies(task["content"], schema_name, task["task_id"])
+        r_content = extractR(task["content"])
+        dependencies = list(get_r_dependencies(r_content, schema_name, task["dependency_function"]).values())
     elif task["type"] == "ROperator":
         dependencies = list(get_r_dependencies(task["content"], schema_name, task["dependency_function"]).values())
     else:
