@@ -7,8 +7,7 @@ def parse_rmd(file: pathlib.Path) -> Dict[str, Any]:
     """Parse an Rmd File"""
     content = file.read_text().split("\n")
     l = [i for i, x in enumerate(content) if re.search(r"^---", x)]
-    temp = "\n".join(content[l[0] + 1 : l[1]])
-    yml = re.sub(r"# ", "", temp)
+    yml = "\n".join(content[l[0] + 1 : l[1]])
     task_config = yaml.safe_load(yml)
     extras = {
         "type": "RmdOperator",

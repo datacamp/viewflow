@@ -1,4 +1,3 @@
-import pytest
 from pathlib import Path
 from viewflow.parsers.parse_sql import parse_sql
 

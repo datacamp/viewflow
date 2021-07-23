@@ -1,10 +1,7 @@
 from datetime import datetime
-import pytest
-from pathlib import Path
-from unittest.mock import patch, ANY, MagicMock, Mock
+from unittest.mock import Mock
 import jinja2
 import viewflow
-from viewflow.create_dag import ParseContext
 
 from airflow import DAG
 from airflow.models import TaskInstance, Connection

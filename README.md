@@ -265,7 +265,7 @@ By default, this will install Airflow 2 and its corresponding dependencies. If y
 ## Prepare your environment to run the tests
 
 ### Postgres
-Use docker compose to set up a PostgreSQL database locally (password: `passw0rd`):
+Use docker compose to set up a PostgreSQL database locally:
 
 ```bash
 docker-compose -f docker-compose-test.yml up
@@ -273,7 +273,7 @@ docker-compose -f docker-compose-test.yml up
 
 If you get a message saying that port 5432 is in use, it means you have a different PostgreSQL server running on your machine. If you used homebrew to install it, you could use `brew services stop postgresql` to stop the other server.
 
-Import the fixtures into the local database:
+Import the fixtures into the local database (the password is `passw0rd`):
 
 ```bash
 psql -U user -W -h localhost -f tests/fixtures/load_postgres.sql -d viewflow
