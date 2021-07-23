@@ -22,7 +22,8 @@ def create_task(parsed_task: Dict[str, Any]):
         content=parsed_task["content"],
         owner=parsed_task.get("owner"),
         schema=parsed_task["schema"],
-        dependency_function=parsed_task.get("dependency_function")
+        dependency_function=parsed_task.get("dependency_function"),
+        automate_read_write=parsed_task.get("automate_read_write", False)
     )
     operator.schema_name = parsed_task.get("schema")
     operator.conn_id = parsed_task.get("connection_id")

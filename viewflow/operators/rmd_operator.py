@@ -23,6 +23,7 @@ class RmdOperator(ROperator):
         owner,
         schema,
         dependency_function,
+        automate_read_write,
         default_args={}
     ):
 
@@ -33,9 +34,11 @@ class RmdOperator(ROperator):
         self.dependency_function = dependency_function
 
         self.content = content
-        self.r_content = extractR(content)
-        Rmd_full_script = self.generateFullScript()
-        file_name = self.saveFullScript(Rmd_full_script)
+        if automate_read_write:
+            Rmd_final_script = self.generateFullScript()
+        else:
+            Rmd_final_script = content
+        file_name = self.saveFullScript(Rmd_final_script, automate_read_write)
 
         super(ROperator, self).__init__(
             bash_command=f"Rscript -e \"rmarkdown::render('{file_name}', run_pandoc=FALSE)\"",
@@ -71,11 +74,12 @@ class RmdOperator(ROperator):
         """)
 
         # Reading the necessary tables for each schema
+        r_content = extractR(self.content)
         pg_engine: Engine = self.get_db_engine()
         pg_inspector: Inspector = inspect(pg_engine)
         schema_names: List[str] = pg_inspector.get_schema_names()
         for schema in schema_names:
-            dependencies = get_r_dependencies(self.r_content, schema, self.dependency_function)
+            dependencies = get_r_dependencies(r_content, schema, self.dependency_function)
             for script_name, table_name in dependencies.items():
                 Rmd_script += f"{script_name} <- dbReadTable(conn, name = Id(schema = '{schema}', table = '{table_name}'))\n"
         Rmd_script += "```\n"
@@ -93,10 +97,11 @@ class RmdOperator(ROperator):
         return Rmd_script
     
 
-    def saveFullScript(self, full_script):
+    def saveFullScript(self, full_script, automate_read_write):
         """Save full_script to file and return the filename"""
         folder = os.environ["AIRFLOW_HOME"] + "/data"
-        file_name = folder + f"/{self.schema}.{self.task_id}_GENERATED.Rmd"
+        suffix = "GENERATED" if automate_read_write else "UNCHANGED"
+        file_name = folder + f"/{self.schema}.{self.task_id}_{suffix}.Rmd"
         Path(folder).mkdir(exist_ok=True)
         with open(file_name, "w") as f:
             f.write(full_script)
