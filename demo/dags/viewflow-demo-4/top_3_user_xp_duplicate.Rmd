@@ -13,6 +13,10 @@ The new view is based on the user_xp table. We can simply use this table in the 
 A custom format for referencing tables can be configured by creating a new function in
 `viewflow/parsers/dependencies_r_patterns.py` and adding a new line to the metadata in this file.
 (This line would look like `dependency_function: your_custom_function`)
+
+Customizing the format to reference tables can be useful if you want to avoid conflicts with other object names.
+By default, if you use `public.<some_name>` for some object, Viewflow will automatically try to assign a table from the `public` schema to this name!
+
 By mentioning a table in the specified format, Viewflow will automatically make sure that:
 1. The script is only executed after all tasks on which this task depends are finished
 2. This table is correctly read from the database.
