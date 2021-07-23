@@ -19,4 +19,5 @@ names(temp)[names(temp) == 'id'] <- 'user_id'
 
 user_all_xp <- select(merge(temp, myPrefix.viewflow_raw.courses, by.x='course_id', by.y='id'), c('user_id', 'xp'))
 
-user_xp_duplicate <- aggregate(xp ~ user_id, user_all_xp, sum)[order(user_id)]
+agg = aggregate(xp ~ user_id, user_all_xp, sum)
+user_xp_duplicate <- agg[order(agg$user_id),]
