@@ -9,7 +9,7 @@ def test_parse_r():
         'connection_id': 'postgres_demo',
         'description': 'Provide the total amount of XP for each user',
         'fields': {'user_id': 'The user id', 'xp': 'The sum of XP'},
-        'owner': 'viewflow-team',
+        'owner': 'data@datacamp.com',
         'schema': 'viewflow_demo',
         'task_file_path': 'tests/projects/r/task_1.R',
         'type': 'ROperator',

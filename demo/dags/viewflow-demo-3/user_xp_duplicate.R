@@ -1,5 +1,5 @@
 # ---
-# owner: viewflow-team
+# owner: data@datacamp.com
 # description: Provide the total amount of XP for each user
 # fields:
 #   user_id: The user id

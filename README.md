@@ -172,7 +172,7 @@ In `$AIRFLOW_HOME/dags/`, create a directory called `my-first-viewflow-dag`. In 
 
 ```yml
 default_args:
-    owner: <owner>@dag.com
+    owner: <email>
     retries: 1
 schedule_interval: 0 6 * * *
 start_date: "2021-01-01"
@@ -200,7 +200,7 @@ A SQL view is created by a SQL file. This SQL file must contain the SQL query (a
 ```sql
 /* 
 ---
-owner: name-of-the-view-owner
+owner: email address of the view owner
 description: A description of your view. It's used as the view's description in the database
 fields:
   email: Description of your column -- used as the view column's description in the database
@@ -226,7 +226,7 @@ import pandas as pd
 def python_view(db_engine):
     """
     ---
-    owner: name-of-the-view-owner
+    owner: email address of the view owner
     description: A description of your view. It's used as the view's description in the database
     fields:
         email: Description of your column -- used as the view column's description in the database

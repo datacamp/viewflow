@@ -10,7 +10,7 @@ def test_parse_rmd():
         'content': '\n## Title 1\nSection 1\n```{r rename_view}\nuser_xp <- viewflow_demo.user_xp\n```\n\n## Title 2\nSection 2\n```{r create_view}\ntop_3_user_xp_duplicate <- head(user_xp[order(user_xp$xp, decreasing=TRUE),], n = 3)\n```\n',
         'description': 'Provide the top 3 users with the most XP.',
         'fields': {'user_id': 'The user id', 'xp': 'The user amount of XP'},
-        'owner': 'viewflow-team',
+        'owner': 'data@datacamp.com',
         'schema': 'viewflow_demo',
         'task_file_path': 'tests/projects/rmd/task_1.Rmd',
         'type': 'RmdOperator'

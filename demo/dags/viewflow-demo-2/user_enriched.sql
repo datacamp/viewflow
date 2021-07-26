@@ -1,6 +1,6 @@
 /*
 ---
-owner: viewflow-team
+owner: data@datacamp.com
 description: A table with enriched information of users
 fields:
   user_id: The user id

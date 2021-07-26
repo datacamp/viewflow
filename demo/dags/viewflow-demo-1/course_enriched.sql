@@ -1,6 +1,6 @@
 /*
 ---
-owner: viewflow-team
+owner: data@datacamp.com
 description: Enriched the course table
 fields:
   course_id: The course id
