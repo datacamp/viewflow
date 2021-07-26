@@ -22,6 +22,5 @@ def test_extract_R():
     sql_file = Path("./tests/projects/rmd/task_1.Rmd")
     rmd = parse_rmd(sql_file)["content"]
     r_content = extractR(rmd)
-    print(r_content)
     expected = "\nuser_xp <- viewflow_demo.user_xp\n\n\ntop_3_user_xp_duplicate <- head(user_xp[order(user_xp$xp, decreasing=TRUE),], n = 3)\n"
     assert r_content == expected

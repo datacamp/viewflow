@@ -6,7 +6,14 @@ fields:
   xp: The user amount of XP
 schema: viewflow_demo
 connection_id: postgres_demo
+automate_read_write: True
 ---
+
+## Automatisation of reading/writing tables
+By default, an Rmd script is simply executed. However, it's possible to automate a part of the script by adding `automate_read_write: True` to the metadata.
+If this option is enabled, Viewflow will take care of connecting to the database and reading the required tables.
+Finally, the newly created view is automatically written to the database (this data frame should have the same name as the name of this file).
+From now on, we will assume the automatisation of reading/writing tables is turned on.
 
 ## Dependencies
 The new view is based on the user_xp table. We can simply use this table in the default format: `<schema_name>.<table_name>`

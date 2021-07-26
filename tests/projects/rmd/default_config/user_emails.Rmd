@@ -1,0 +1,14 @@
+---
+owner: data@datacamp.com
+description: This is a very simple Rmd task.
+fields:
+  user_id: User ID
+  email: Email address
+schema: viewflow
+connection_id: postgres_viewflow
+---
+
+## Straightforward execution
+```{r}
+myString <- "Hello World!"
+```
