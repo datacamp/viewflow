@@ -133,8 +133,6 @@ def set_callbacks(created_task, parsed_task):
     """Set the task-specific callbacks if given any.
     Use default callbacks if neither the DAG's config.yml nor the task specifies callbacks."""
 
-    
-
     for callback_type in ["on_success_callback", "on_failure_callback", "on_retry_callback"]:
         # The callback at this point is the one that is specified in the DAG's config.yml
         # However, it is a string... We convert the string to a function

@@ -240,6 +240,28 @@ def python_view(db_engine):
 
 Please note that Viewflow expects the Python function that creates the view to have the parameter `db_engine` (used to connect to the database). You don't have to set `db_engine` anywhere. Viewflow takes care of setting this variable.
 
+## Configuring callbacks
+A useful feature is enabling callbacks when a task succeeds, fails, or is retried. This callback can take many forms, e.g. an email or a Slack message. Viewflow allows you to define your own callbacks in [viewflow/task_callbacks.py](./viewflow/task_callbacks.py). These callbacks can be configured on multiple levels:
+1. By default, certain functions defined in [viewflow/task_callbacks.py](./viewflow/task_callbacks.py) are used (e.g. `on_success_callback_default`).
+2. The callbacks can be overwritten for all tasks in a given DAG. E.g. if you have defined 3 custom callback functions in [viewflow/task_callbacks.py](./viewflow/task_callbacks.py), you can specify them in the DAG's `config.yml` file as following:
+
+```yaml
+default_args:
+  on_success_callback: on_success_callback_custom
+  on_failure_callback: on_failure_callback_custom
+  on_retry_callback: on_retry_callback_custom
+```
+
+3. For the highest level of configurability, you can overwrite the callbacks for a specific task. This option is prioritized, it doesn't matter whether there are callbacks specified in the DAG's `config.yml` file. The callback functions can simply be added to the metadata of the task's script:
+
+```yaml
+on_success_callback: on_success_callback_custom
+on_failure_callback: on_failure_callback_custom
+on_retry_callback: on_retry_callback_custom
+```
+
+Of course, options 1, 2 and 3 can be combined to efficiently configure the callbacks of a multitude of tasks.
+
 # Contributing to Viewflow
 
 We welcome all sorts of contributions, be it new features, bug fixes or documentation, we encourage you to create a new PR. To create a new PR or to report new bugs, please read how to [contribute to Viewflow](CONTRIBUTION.md). 
