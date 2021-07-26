@@ -190,6 +190,9 @@ def create_dag(input_dir: str, operators=OPERATORS) -> DAG:
 
     parse_context = ParseContext(dag_id=dag_id)
     dag_config = parse_dag_dir(input_dir, parse_context=parse_context)
+    task_ids = [t["task_id"] for t in dag_config["tasks"]]
+    if len(set(task_ids)) < len(task_ids):
+        logging.error(f"Error for dir: {input_dir}\nDuplicate file name (excluding file extension). The task_id (=file stem) must be unique!")
     return create_dag_from_config(dag_id, dag_config, OPERATORS)
 
 
@@ -264,12 +267,16 @@ def parse_dags_dir(dags_dir: str):
         for dag in dags_dir_path.iterdir()
         if dag.is_dir() and Path(f"{dag}/config.yml").is_file()
     ]
+    all_task_ids = []
     for input_dir in dags:
         dag_dir = Path(input_dir)
         dag_id = dag_dir.name
         parse_context = ParseContext(dag_id=dag_id)
         try:
             dag_config = parse_dag_dir(input_dir, parse_context=parse_context)
+            all_task_ids += [t["task_id"] for t in dag_config["tasks"]]
+            if len(set(all_task_ids)) < len(all_task_ids):
+                logging.error(f"Error for dir: {input_dir}\nDuplicate file name (excluding file extension). The file stem must be unique over all DAGs!")
             dags_config.append({"dag_name": dag_id, "dag_config": dag_config})
         except Exception as error:
             logging.error(f"Error for dir: {input_dir}\n{error}")
