@@ -13,7 +13,7 @@ from typing import Dict, Any, TypeVar
 from airflow import DAG  # type: ignore
 from airflow.models import BaseOperator  # type: ignore
 from airflow.sensors.external_task_sensor import ExternalTaskSensor  # type: ignore
-from .task_callbacks import success_callback_default, failure_callback_default, retry_callback_default
+import task_callbacks
 
 from .adapters.postgresql import postgres_adapter
 from .adapters.python import python_adapter
@@ -204,9 +204,15 @@ def create_task(parsed_task: Dict[str, Any], operators=OPERATORS) -> O:
         return None
     task = adapter(parsed_task)
 
-    task.on_success_callback = success_callback_default
-    task.on_failure_callback = failure_callback_default
-    task.on_retry_callback = retry_callback_default
+    task.on_success_callback = \
+        getattr(task_callbacks, parsed_task.get("on_success_callback")) if parsed_task.has("on_success_callback") else \
+        task_callbacks.success_callback_default
+    task.on_failure_callback = \
+        getattr(task_callbacks, parsed_task.get("on_failure_callback")) if parsed_task.has("on_failure_callback") else \
+        task_callbacks.failure_callback_default
+    task.on_retry_callback = \
+        getattr(task_callbacks, parsed_task.get("on_retry_callback")) if parsed_task.has("on_retry_callback") else \
+        task_callbacks.retry_callback_default
     
     return task
 
