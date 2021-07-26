@@ -1,20 +1,19 @@
-from datetime import datetime
 from airflow.utils.email import send_email
 from textwrap import dedent
 
-def success_callback_default(airflow_context):
+def on_success_callback_default(airflow_context):
     pass
 
 
-def retry_callback_default(airflow_context):
+def on_retry_callback_default(airflow_context):
     pass
 
 
-def failure_callback_default(airflow_context):
+def on_failure_callback_default(airflow_context):
     pass
 
 
-def failure_callback_email(airflow_context):
+def on_failure_callback_email(airflow_context):
     """Send an email to the owner of the failed task.
     Note that you first have to configure the email (SMTP) settings in $AIRFLOW_HOME/airflow.cfg"""
 

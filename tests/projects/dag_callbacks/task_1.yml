@@ -1,0 +1,11 @@
+owner: engineering@datacamp.com
+type: PostgresOperator
+description: This is a very simple task.
+fields:
+  id: This is the ID.
+tags:
+  - cool
+  - new
+content: |-
+  SELECT test FROM some_table
+schema: viewflow

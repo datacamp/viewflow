@@ -129,6 +129,30 @@ def get_all_dependencies(task, schema_name):
     return dependencies
 
 
+def set_callbacks(created_task, parsed_task):
+    """Set the task-specific callbacks if given any.
+    Use default callbacks if neither the DAG's config.yml nor the task specifies callbacks."""
+
+    
+
+    for callback_type in ["on_success_callback", "on_failure_callback", "on_retry_callback"]:
+        # The callback at this point is the one that is specified in the DAG's config.yml
+        # However, it is a string... We convert the string to a function
+        if getattr(created_task, callback_type):
+            callback_str = getattr(created_task, callback_type)
+            callback_fun = getattr(task_callbacks, callback_str)
+            setattr(created_task, callback_type, callback_fun)
+        
+        # Set task-specific callbacks
+        if parsed_task.get(callback_type):
+            setattr(created_task, callback_type, getattr(task_callbacks, parsed_task.get(callback_type)))
+
+        # Use default callbacks if there's still no callback configured
+        if not getattr(created_task, callback_type):
+            setattr(created_task, callback_type, getattr(task_callbacks, callback_type+"_default"))
+
+         
+
 def create_dag_from_config(dag_id: str, dag_config, operators=OPERATORS) -> DAG:
     dag = DAG(dag_id, **dag_config["dag_config"])
     with dag:
@@ -137,6 +161,7 @@ def create_dag_from_config(dag_id: str, dag_config, operators=OPERATORS) -> DAG:
             created_task = create_task(task, operators)
             if created_task == None:
                 continue
+            set_callbacks(created_task, task)
             task_dict[task.get("task_id")] = {
                 "task": created_task,
                 "dependencies": task.get("depends_on", []),
@@ -203,11 +228,6 @@ def create_task(parsed_task: Dict[str, Any], operators=OPERATORS) -> O:
         )
         return None
     task = adapter(parsed_task)
-
-    task.on_success_callback = getattr(task_callbacks, parsed_task.get("on_success_callback", "success_callback_default"))
-    task.on_failure_callback = getattr(task_callbacks, parsed_task.get("on_failure_callback", "failure_callback_default"))
-    task.on_retry_callback = getattr(task_callbacks, parsed_task.get("on_retry_callback", "retry_callback_default"))
-    
     return task
 
 
