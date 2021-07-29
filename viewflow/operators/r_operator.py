@@ -37,8 +37,8 @@ class ROperator(BashOperator):
         self.table = f"{schema}.{self.task_id}"
         self.dependency_function = dependency_function
 
-        R_full_script = self.generateFullScript()
-        file_name = self.saveFullScript(R_full_script)
+        R_full_script = self.generate_full_script()
+        file_name = self.save_full_script(R_full_script)
 
         super().__init__(
             bash_command=f"Rscript {file_name}",
@@ -52,7 +52,7 @@ class ROperator(BashOperator):
             self.doc_sql += f"""COMMENT ON COLUMN {self.table}."{field_name}" IS '{field_value.strip()}';"""
 
 
-    def generateFullScript(self) -> str:
+    def generate_full_script(self) -> str:
         """Extend user-provided R script to the full script.
         The full script is composed of the following parts:
             1) Connecting to the database and reading the tables the script depends on
@@ -92,7 +92,7 @@ class ROperator(BashOperator):
         return R_script
     
 
-    def saveFullScript(self, full_script):
+    def save_full_script(self, full_script):
         """Save full_script to file and return the filename"""
         folder = os.environ["AIRFLOW_HOME"] + "/data"
         file_name = folder + f"/{self.schema}.{self.task_id}_GENERATED.R"

@@ -35,10 +35,10 @@ class RmdOperator(ROperator):
 
         self.content = content
         if automate_read_write:
-            Rmd_final_script = self.generateFullScript()
+            Rmd_final_script = self.generate_full_script()
         else:
             Rmd_final_script = content
-        file_name = self.saveFullScript(Rmd_final_script, automate_read_write)
+        file_name = self.save_full_script(Rmd_final_script, automate_read_write)
 
         super(ROperator, self).__init__(
             bash_command=f"Rscript -e \"rmarkdown::render('{file_name}', run_pandoc=FALSE)\"",
@@ -52,7 +52,7 @@ class RmdOperator(ROperator):
             self.doc_sql += f"""COMMENT ON COLUMN {self.table}."{field_name}" IS '{field_value.strip()}';"""
 
 
-    def generateFullScript(self) -> str:
+    def generate_full_script(self) -> str:
         """Extend user-provided Rmd script to the full script.
         The full script is composed of the following parts:
             1) Connecting to the database and reading the tables the script depends on
@@ -74,7 +74,7 @@ class RmdOperator(ROperator):
         """)
 
         # Reading the necessary tables for each schema
-        r_content = extractR(self.content)
+        r_content = extract_r(self.content)
         pg_engine: Engine = self.get_db_engine()
         pg_inspector: Inspector = inspect(pg_engine)
         schema_names: List[str] = pg_inspector.get_schema_names()
@@ -97,7 +97,7 @@ class RmdOperator(ROperator):
         return Rmd_script
     
 
-    def saveFullScript(self, full_script, automate_read_write):
+    def save_full_script(self, full_script, automate_read_write):
         """Save full_script to file and return the filename"""
         folder = os.environ["AIRFLOW_HOME"] + "/data"
         suffix = "GENERATED" if automate_read_write else "UNCHANGED"
@@ -109,6 +109,6 @@ class RmdOperator(ROperator):
 
     
 
-def extractR(rmd_content):
+def extract_r(rmd_content):
     """Extract the actual R code from the given Rmd script"""
     return "\n".join(re.findall(r"^```\{r[ \}].*?$(.+?)^```", rmd_content, flags=re.MULTILINE|re.DOTALL))
