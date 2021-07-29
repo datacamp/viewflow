@@ -5,7 +5,13 @@ RUN apt-get update -yqq \
     && apt-get install -y libpq-dev \
     && apt-get install -y build-essential \
     && apt-get install -y vim \
-    && apt-get install -y git 
+    && apt-get install -y git \
+    && apt-get install -y r-base \
+    && Rscript -e "install.packages('DBI')" \
+    && Rscript -e "install.packages('RPostgres')" \
+    && Rscript -e "install.packages('rmarkdown')" \
+    && Rscript -e "install.packages('dplyr')"
+    
 
 COPY ./requirements.txt /requirements.txt
 COPY ./viewflow /viewflow/viewflow
@@ -16,5 +22,4 @@ USER airflow
 
 ENV PYTHONPATH /viewflow
 RUN pip install --upgrade pip
-RUN pip install -r /requirements.txt
 RUN pip install /viewflow

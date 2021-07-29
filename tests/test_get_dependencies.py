@@ -16,35 +16,21 @@ def test_get_sql_dependencies():
     sql_query = task_parsed["content"]
     schema_name = task_parsed["schema"]
 
-    dependencies = get_sql_dependencies(sql_query, schema_name, "dag_1")
+    dependencies = get_sql_dependencies(sql_query, schema_name)
 
-    expected_dependencies = [
-        {"task": "courses", "dag": "dag_1"},
-        {"task": "exercises", "dag": "dag_1"},
-    ]
-
-    for dependency in expected_dependencies:
-        assert dependency in dependencies
-
-
-def test_get_dependencies_implicit():
-    dependencies = get_all_dependencies(task_parsed, "viewflow_schema")
-    expected_dependencies = []
+    expected_dependencies = ["courses", "exercises"]
 
     for dependency in expected_dependencies:
         assert dependency in dependencies
 
 
 def test_get_dependencies_none():
-    sql_file = Path("tests/projects/dag1_simple/task_1.yml")
-    task_parsed = parse_yml(sql_file)
-
-    task_parsed["dag"] = "dag1_simple"
-    dependencies = get_all_dependencies(task_parsed, "viewflow_schema")
-
+    wrong_schema_name = "NOT" + task_parsed["schema"]
+    dependencies = get_all_dependencies(task_parsed, wrong_schema_name)
     expected_dependencies = []
 
-    assert dependencies == expected_dependencies
+    for dependency in expected_dependencies:
+        assert dependency in dependencies
 
 
 def test_get_dependencies_external_internal():

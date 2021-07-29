@@ -1,0 +1,15 @@
+---
+owner: data@datacamp.com
+description: This is a very simple Rmd task.
+fields:
+  user_id: User ID
+  email: Email address
+schema: viewflow
+connection_id: postgres_viewflow
+automate_read_write: True
+---
+
+## Automatic reading and writing from/to database
+```{r}
+user_emails = select(viewflow.users, c("user_id", "email"))
+```
