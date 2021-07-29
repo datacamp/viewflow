@@ -1,18 +1,18 @@
 # Viewflow
 
-Viewflow is a framework built on the top of Airflow that enables data scientists to create materialized views. It allows data scientists to focus on the logic of the view creation in their preferred tool (e.g., SQL, Python).
+Viewflow is a framework built on the top of Airflow that enables data scientists to create materialized views. It allows data scientists to focus on the logic of the view creation in their preferred tool.
 
-Viewflow automatically creates Airflow DAGs and tasks based on SQL or Python files. 
+Viewflow automatically creates Airflow DAGs and tasks based on SQL, Python, R or Rmd files. Normally, each of these files is responsible for materializing a new view. You write the view definition, Viewflow handles the rest!
 
-One of the major features of Viewflow is its ability to manage tasks' dependencies, i.e., views used to create another view. Viewflow can automatically extract from the code (SQL query or Python script) the internal and external dependencies. An internal dependency is a view that belongs to the same DAG as a view being created. An external dependency is a view that belongs to a different DAG. The benefits of automatic dependency management are twofold: First, data scientists don't have to manually list dependencies, usually an error-prone process. Second, it makes sure that no view is built on stale data (because all dependent views will be updated beforehand).
+One of the major features of Viewflow is its ability to manage tasks' dependencies, i.e., views used to create another view. Viewflow can automatically extract from the code (e.g. SQL query or Python script) the internal and external dependencies. An internal dependency is a view that belongs to the same DAG as a view being created. An external dependency is a view that belongs to a different DAG. The benefits of automatic dependency management are twofold: First, data scientists don't have to manually list dependencies, usually an error-prone process. Second, it makes sure that no view is built on stale data (because all dependent views will be updated beforehand).
 
-Currently, Viewflow supports SQL and Python views and PostgreSQL/Redshift as a destination. We will continue improving Viewflow by adding new view types (e.g., R, Jupyter Notebooks, ...) and destination (e.g., Snowflake, BigQuery, ...).
+Currently, Viewflow supports SQL, Python, R and Rmd views and PostgreSQL/Redshift as a destination. We will continue improving Viewflow by adding new view types (e.g. Jupyter Notebooks) and destinations (e.g., Snowflake, BigQuery, ...).
 
 Do you want more context on why we built and released Viewflow? Check out our announcement blog post: [*Data Scientists, don’t worry about data engineering: Viewflow has your back.*](https://medium.com/datacamp-engineering/viewflow-fe07353fa068)!
 
 ## Viewflow demo
 
-We created a demo that shows how Viewflow works. The demo creates two DAGs: `viewflow-demo-1` and `viewflow-demo-2`. These DAGs create a total of four views in a local Postgres database. Check out the view files in [demo/dags/](./demo/dags/). Some of the following commands are different based on which Airflow version you're using. For new users, Airflow 2 is the best option. However, you can also run the demo using the older Airflow 1.10 version by using the indicated commands.
+We created a demo that shows how Viewflow works. The demo creates multiple DAGs: `viewflow-demo-1` through `viewflow-demo-4`. These DAGs create a total of four views in a local Postgres database. Check out the view files in [demo/dags/](./demo/dags/). Some of the following commands are different based on which Airflow version you're using. For new users, Airflow 2 is the best option. However, you can also run the demo using the older Airflow 1.10 version by using the indicated commands.
 
 ### Run the demo 
 We use `docker-compose` to instantiate an Apache Airflow instance and a Postgres database. The Airflow container and the Postgres container are defined in the `docker-compose-airflow<version>.yml` files. The first time you want to run the demo, you will first have to build the Apache Airflow docker image that embeds Viewflow:
@@ -28,7 +28,7 @@ docker-compose -f docker-compose-airflow2.yml up     # Airflow 2
 docker-compose -f docker-compose-airflow1.10.yml up  # Airflow 1.10
 ```
 
-Go to your local Apache Airflow instance on [http://localhost:8080](http://localhost:8080). There are two DAGs called `viewflow-demo-1` and `viewflow-demo-2`. Notice how Viewflow automatically generated these DAGs based on the example queries in the subfolders of [demo/dags/](./demo/dags/)!
+Go to your local Apache Airflow instance on [http://localhost:8080](http://localhost:8080). There are four DAGs called `viewflow-demo-1` through `viewflow-demo-4`. Notice how Viewflow automatically generated these DAGs based on the example queries in the subfolders of [demo/dags/](./demo/dags/)!
 
 <img src="./img/viewflow-demo-1.png" width="800">
 
@@ -38,10 +38,10 @@ By default, the DAGs are disabled. Turn the DAGs on by clicking on the button `O
 
 ### Query the views
 
-Once the DAGs have run and all tasks completed, you can query the views created by Viewflow in the local Postgres database created by Docker. You can use any Postgres client (note that Postgres is running locally on port `5433`):
+Once the DAGs have run and all tasks completed, you can query the views created by Viewflow in the local Postgres database created by Docker. You can use any Postgres client (note that Postgres is running locally on port `5432`):
 
 ```sh
-psql -h localhost -p 5433 -U airflow -d airflow
+psql -h localhost -p 5432 -U airflow -d airflow
 ```
 
 Use `airflow` when `psql` asks you for the user password.
@@ -193,6 +193,8 @@ Viewflow expects some metadata that must be included in the SQL and Python files
 * **schema**: The name of the schema in which Viewflow creates the view. It's also used by Viewflow to create the dependencies.
 * **connection_id**: Airflow connection name used to connect to the database (See Section [*Create an Airflow connection to your destination*](https://github.com/datacamp/viewflow#create-an-airflow-connection-to-your-destination)).
 
+The newly created view has the same name as the filename of the SQL query, Python script or R(md) script.
+
 ### SQL views
 
 A SQL view is created by a SQL file. This SQL file must contain the SQL query (as a `SELECT` statement) of your view and the view metadata. Here's an example:
@@ -240,6 +242,18 @@ def python_view(db_engine):
 
 Please note that Viewflow expects the Python function that creates the view to have the parameter `db_engine` (used to connect to the database). You don't have to set `db_engine` anywhere. Viewflow takes care of setting this variable.
 
+### R views
+
+Viewflow handles R scripts similar to the existing SQL and Python files. Additionally, there's an element of automatisation. You simply define the view in R code, Viewflow will automatically read the necessary tables and write the new view to the database. Note that you need to define the new view in the R script with the same name as the R script (which is also the name of the table where the view is materialized in the database).
+
+By default, other tables are expected to be referenced as `<schema_name>.<table_name>`.
+This default behaviour can be changed by adding a new function in [dependencies_r_patterns.py](./viewflow/parsers/dependencies_r_patterns.py) and adding a line `dependency_function: <your_custom_function>` to the metadata of the R script. The script [user_xp_duplicate.R](./demo/dags/viewflow-demo-3/user_xp_duplicate.R) illustrates this.
+
+### Rmd views
+
+Rmd scripts can be used mostly like R scripts. For Rmd scripts, you do have to explicitly configure the automated reading and writing of tables by adding `automate_read_write: True` to the metadata. By default, the script is executed as is. The task [top_3_user_xp_duplicate.Rmd](./demo/dags/viewflow-demo-4/top_3_user_xp_duplicate.Rmd) contains an explanation of the usage of Rmd scripts.
+
+
 # Contributing to Viewflow
 
 We welcome all sorts of contributions, be it new features, bug fixes or documentation, we encourage you to create a new PR. To create a new PR or to report new bugs, please read how to [contribute to Viewflow](CONTRIBUTION.md). 
@@ -265,7 +279,7 @@ By default, this will install Airflow 2 and its corresponding dependencies. If y
 ## Prepare your environment to run the tests
 
 ### Postgres
-Use docker compose to set up a PostgreSQL database locally (password: `passw0rd`):
+Use docker compose to set up a PostgreSQL database locally:
 
 ```bash
 docker-compose -f docker-compose-test.yml up
@@ -273,7 +287,7 @@ docker-compose -f docker-compose-test.yml up
 
 If you get a message saying that port 5432 is in use, it means you have a different PostgreSQL server running on your machine. If you used homebrew to install it, you could use `brew services stop postgresql` to stop the other server.
 
-Import the fixtures into the local database:
+Import the fixtures into the local database (the password is `passw0rd`):
 
 ```bash
 psql -U user -W -h localhost -f tests/fixtures/load_postgres.sql -d viewflow
@@ -317,7 +331,7 @@ The *adapter* is the translation layer of Viewflow's views to their correspondin
 
 Finally, the *dependency extractor* uses the parser's data structure objects to set the internal and external dependencies to the Airflow task object created by the adapter.
 
-This architecture allows us to add new source file types in the future easily (e.g., Python notebook, R markdown).
+This architecture allows us to add new source file types in the future easily (e.g. Python notebook).
 
 # Acknowledgments 
 

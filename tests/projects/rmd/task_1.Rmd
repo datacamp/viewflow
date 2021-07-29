@@ -1,0 +1,21 @@
+---
+owner: viewflow-team
+description: Provide the top 3 users with the most XP.
+fields:
+  user_id: The user id
+  xp: The user amount of XP
+schema: viewflow_demo
+connection_id: postgres_demo
+---
+
+## Title 1
+Section 1
+```{r rename_view}
+user_xp <- viewflow_demo.user_xp
+```
+
+## Title 2
+Section 2
+```{r create_view}
+top_3_user_xp_duplicate <- head(user_xp[order(user_xp$xp, decreasing=TRUE),], n = 3)
+```

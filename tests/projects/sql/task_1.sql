@@ -10,6 +10,6 @@ schema: viewflow
 --- 
 */
 
-SELECT course_id, title, technology, exercice_title
+SELECT course_id, title, technology, exercise_title
   FROM viewflow.courses c
   JOIN viewflow.exercises e using (course_id) 

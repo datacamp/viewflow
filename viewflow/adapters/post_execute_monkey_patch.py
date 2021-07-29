@@ -1,4 +1,4 @@
-from airflow.hooks.postgres_hook import PostgresHook
+from airflow.providers.postgres.hooks.postgres import PostgresHook
 import psycopg2
 import logging
 

@@ -3,7 +3,7 @@ import yaml
 import logging
 import pickle
 import re
-import networkx as nx
+import networkx as nx  # type: ignore
 import random
 from collections import namedtuple
 from pathlib import Path
@@ -12,14 +12,24 @@ from dataclasses import dataclass
 from typing import Dict, Any, TypeVar
 from airflow import DAG  # type: ignore
 from airflow.models import BaseOperator  # type: ignore
-from airflow.sensors.external_task_sensor import ExternalTaskSensor
+from airflow.sensors.external_task_sensor import ExternalTaskSensor  # type: ignore
+
 from .adapters.postgresql import postgres_adapter
 from .adapters.python import python_adapter
+from .adapters.rmd import rmd_adapter
+from .adapters.r import r_adapter
+
 from .parsers.parse_yml import parse_yml
 from .parsers.parse_sql import parse_sql
 from .parsers.parse_python import parse_python
+from .parsers.parse_rmd import parse_rmd
+from .parsers.parse_r import parse_r
+
 from .parsers.dependencies import get_sql_dependencies
 from .parsers.dependencies import get_python_dependencies
+from .parsers.dependencies import get_r_dependencies
+
+from .operators.rmd_operator import extract_r
 
 
 O = TypeVar("O", bound=BaseOperator)
@@ -28,9 +38,11 @@ DAG_CONFIG_FILE = "config.yml"
 OPERATORS = {
     "PostgresOperator": postgres_adapter.create_task,
     "PythonToPostgresOperator": python_adapter.create_task,
+    "RmdOperator": rmd_adapter.create_task,
+    "ROperator": r_adapter.create_task
 }
 
-PARSERS = {".yml": parse_yml, ".sql": parse_sql, ".py": parse_python}
+PARSERS = {".yml": parse_yml, ".sql": parse_sql, ".py": parse_python, ".rmd": parse_rmd, ".r": parse_r}
 
 SQL_OPERATORS = ["PostgresOperator"]
 
@@ -103,17 +115,14 @@ def parse_task_file(
 
 def get_all_dependencies(task, schema_name):
     if task["type"] == "PostgresOperator":
-        dependencies = []
-        dependencies.extend(
-            get_sql_dependencies(task["content"], schema_name, task["dag"])
-        )
-        dependencies = [x["task"] for x in dependencies]
+        dependencies = get_sql_dependencies(task["content"], schema_name)
     elif task["type"] == "PythonToPostgresOperator":
-        dependencies = get_python_dependencies(
-            task["content"], schema_name, task["dag"]
-        )
-        dependencies = [x["task"] for x in dependencies]
-
+        dependencies = get_python_dependencies(task["content"], schema_name)
+    elif task["type"] == "RmdOperator":
+        r_content = extract_r(task["content"])
+        dependencies = list(get_r_dependencies(r_content, schema_name, task["dependency_function"]).values())
+    elif task["type"] == "ROperator":
+        dependencies = list(get_r_dependencies(task["content"], schema_name, task["dependency_function"]).values())
     else:
         dependencies = []
     return dependencies
@@ -181,6 +190,9 @@ def create_dag(input_dir: str, operators=OPERATORS) -> DAG:
 
     parse_context = ParseContext(dag_id=dag_id)
     dag_config = parse_dag_dir(input_dir, parse_context=parse_context)
+    task_ids = [t["task_id"] for t in dag_config["tasks"]]
+    if len(set(task_ids)) < len(task_ids):
+        logging.error(f"Error for dir: {input_dir}\nDuplicate file name (excluding file extension). The task_id (=file stem) must be unique!")
     return create_dag_from_config(dag_id, dag_config, OPERATORS)
 
 
@@ -211,6 +223,7 @@ def enrich_dags_config(dags_parsed, schema_name):
                     "task_id": task["task_id"],
                     "type": task["type"],
                     "content": task.get("content", ""),
+                    "dependency_function": task.get("dependency_function"),
                     "disable_implicit_dependencies": task.get(
                         "disable_implicit_dependencies"
                     ),
@@ -254,12 +267,16 @@ def parse_dags_dir(dags_dir: str):
         for dag in dags_dir_path.iterdir()
         if dag.is_dir() and Path(f"{dag}/config.yml").is_file()
     ]
+    all_task_ids = []
     for input_dir in dags:
         dag_dir = Path(input_dir)
         dag_id = dag_dir.name
         parse_context = ParseContext(dag_id=dag_id)
         try:
             dag_config = parse_dag_dir(input_dir, parse_context=parse_context)
+            all_task_ids += [t["task_id"] for t in dag_config["tasks"]]
+            if len(set(all_task_ids)) < len(all_task_ids):
+                logging.error(f"Error for dir: {input_dir}\nDuplicate file name (excluding file extension). The file stem must be unique over all DAGs!")
             dags_config.append({"dag_name": dag_id, "dag_config": dag_config})
         except Exception as error:
             logging.error(f"Error for dir: {input_dir}\n{error}")
