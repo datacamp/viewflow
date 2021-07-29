@@ -1,0 +1,28 @@
+owner: engineering@datacamp.com
+type: IncrementalPostgresOperator
+description: List the email addresses of all users who are subscribed to notifications in the category blog.
+fields:
+  user_id: The user ID
+  notification_mode: The detailed mode for which notifications to receive
+  email: Email address of the user
+schema: viewflow_demo
+connection_id: postgres_demo
+parameters:
+  initial:
+    min_time: '''2021-01-01 12:00:00'''
+    max_time: '''2022-01-01 12:00:00'''
+  update:
+    min_time: (SELECT max(updated_at) FROM viewflow_demo.emails_blog)
+    max_time: (SELECT (max(updated_at) + interval '1 day' * 31) FROM viewflow_demo.emails_blog)
+content: |-
+  SELECT user_id, notification_mode, email, updated_at
+  FROM
+    viewflow_raw.notifications n
+    INNER JOIN viewflow_raw.users c
+    ON n.user_id = c.id
+  WHERE
+    category = 'blog' AND
+    notification_mode <> 'off' AND
+    updated_at >= {{min_time}} AND
+    updated_at < {{max_time}}
+primary_key: [user_id, notification_mode]
