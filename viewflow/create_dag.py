@@ -30,7 +30,7 @@ from .parsers.dependencies import get_sql_dependencies
 from .parsers.dependencies import get_python_dependencies
 from .parsers.dependencies import get_r_dependencies
 
-from .operators.rmd_operator import extractR
+from .operators.rmd_operator import extract_r
 
 
 O = TypeVar("O", bound=BaseOperator)
@@ -120,7 +120,7 @@ def get_all_dependencies(task, schema_name):
     elif task["type"] == "PythonToPostgresOperator":
         dependencies = get_python_dependencies(task["content"], schema_name)
     elif task["type"] == "RmdOperator":
-        r_content = extractR(task["content"])
+        r_content = extract_r(task["content"])
         dependencies = list(get_r_dependencies(r_content, schema_name, task["dependency_function"]).values())
     elif task["type"] == "ROperator":
         dependencies = list(get_r_dependencies(task["content"], schema_name, task["dependency_function"]).values())
