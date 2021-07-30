@@ -12,12 +12,12 @@ SQL_TEMPLATE = (
 
 class IncrementalPostgresOperator(PostgresOperator):
     """
-    Operator intended to efficiently maintain a materialized view on a regular basis.
-    The destination view is not made from scratch every time the operator runs, only recently created/updated rows from the data source are taken into account.
+    Operator intended to efficiently update a materialized view on a regular basis.
+    The destination view is not made from scratch every time the operator runs, only recently inserted/updated rows from the data source are taken into account.
     This is done by running a query with a filter: only rows between the min_time and max_time parameters are selected.
 
     The destination view is updated by upserting the resulting rows of the query.
-    Rows that have been changed (determined based on the primary key) are updated, new rows are inserted.
+    Rows that have been changed (determined based on the primary key specified in the yml file) are updated, new rows are inserted.
     """
 
     def __init__(
@@ -66,8 +66,8 @@ class IncrementalPostgresOperator(PostgresOperator):
         con.cursor().execute(f"select exists(select * from information_schema.tables where table_schema='{self.schema}' and table_name='{self.task_id}');")
         table_exists = con.cursor().fetchone()[0]
 
-        # self.params["query"] must be set to self.content where
-        # the appropriate parameters (min_time and max_time) are filled out
+        # self.params["query"] must be set to the SELECT-statement with a filter that retrieves the new rows of the target view.
+        # It is set to self.content where the appropriate parameters (min_time and max_time) are filled out.
         if not table_exists:
             # Run with initial parameters
             self.params["query"] = Template(self.content.render(

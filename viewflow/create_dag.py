@@ -37,14 +37,20 @@ O = TypeVar("O", bound=BaseOperator)
 DAG_CONFIG_FILE = "config.yml"
 OPERATORS = {
     "PostgresOperator": postgres_adapter.create_task,
+    "IncrementalPostgresOperator": postgres_adapter.create_task,
     "PythonToPostgresOperator": python_adapter.create_task,
     "RmdOperator": rmd_adapter.create_task,
     "ROperator": r_adapter.create_task
 }
 
-PARSERS = {".yml": parse_yml, ".sql": parse_sql, ".py": parse_python, ".rmd": parse_rmd, ".r": parse_r}
-
-SQL_OPERATORS = ["PostgresOperator"]
+PARSERS = {
+    ".yml": parse_yml,
+    ".yaml": parse_yml,
+    ".sql": parse_sql,
+    ".py": parse_python,
+    ".rmd": parse_rmd,
+    ".r": parse_r
+}
 
 
 @dataclass
