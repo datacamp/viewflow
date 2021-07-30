@@ -30,9 +30,9 @@ docker-compose -f docker-compose-airflow1.10.yml up  # Airflow 1.10
 
 Go to your local Apache Airflow instance on [http://localhost:8080](http://localhost:8080). There are three DAGs called `viewflow-demo-1` through `viewflow-demo-3`. Notice how Viewflow automatically generated these DAGs based on the example queries in the subfolders of [demo/dags/](./demo/dags/)!
 
-<img src="./img/viewflow-demo-1.png" width="800">
+TODO overview img
 
-<img src="./img/viewflow-demo-2.png" width="800">
+<img src="./img/viewflow-demo-1.png" width="800">
 
 By default, the DAGs are disabled. Turn the DAGs on by clicking on the button `Off`. This will trigger the DAGs.
 
@@ -193,7 +193,7 @@ Viewflow expects some metadata that must be included in the SQL and Python files
 * **schema**: The name of the schema in which Viewflow creates the view. It's also used by Viewflow to create the dependencies.
 * **connection_id**: Airflow connection name used to connect to the database (See Section [*Create an Airflow connection to your destination*](https://github.com/datacamp/viewflow#create-an-airflow-connection-to-your-destination)).
 
-The newly created view has the same name as the filename of the SQL query, Python script or R(md) script.
+The newly created view has the same name as the filename (actually the file stem, without extension) of the SQL query, Python script or R(md) script. Viewflow materializes the view in the database with this name, so it must be unique over all DAGs!
 
 ### SQL views
 
@@ -244,7 +244,7 @@ Please note that Viewflow expects the Python function that creates the view to h
 
 ### R views
 
-Viewflow handles R scripts similar to the existing SQL and Python files. Additionally, there's an element of automatisation. You simply define the view in R code, Viewflow will automatically read the necessary tables and write the new view to the database. Note that you need to define the new view in the R script with the same name as the R script (which is also the name of the table where the view is materialized in the database).
+Viewflow handles R scripts similar to the existing SQL and Python files. Additionally, there's an element of automatisation. You simply define the view in R code, Viewflow will automatically read the necessary tables and write the new view to the database. Note that you need to define the new view in the R script with the same name as the R script (which is also the name of the table of the materialized view in the database).
 
 By default, other tables are expected to be referenced as `<schema_name>.<table_name>`.
 This default behaviour can be changed by adding a new function in [dependencies_r_patterns.py](./viewflow/parsers/dependencies_r_patterns.py) and adding a line `dependency_function: <your_custom_function>` to the metadata of the R script. The script [user_xp_duplicate.R](./demo/dags/viewflow-demo-3/user_xp_duplicate.R) illustrates this.

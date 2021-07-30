@@ -1,7 +1,5 @@
 
-
-
--- Create staging table with new rows
+-- Create staging table with new rows for target table
 DROP TABLE IF EXISTS {{ params.schema }}.{{ params.task_id }}_stage;
 CREATE TABLE
     {{ params.schema }}.{{ params.task_id }}_stage
@@ -11,7 +9,6 @@ CREATE TABLE
 
 -- Create target table if necessary
 CREATE TABLE IF NOT EXISTS {{ params.schema }}.{{ params.task_id }} (LIKE {{ params.schema }}.{{ params.task_id }}_stage);
-
 
 
 BEGIN TRANSACTION;
@@ -32,7 +29,7 @@ INSERT INTO {{ params.schema }}.{{ params.task_id }}
 END TRANSACTION;
 
 
-DROP TABLE {{ params.schema }}.{{ params.task_id }}_stage
+DROP TABLE {{ params.schema }}.{{ params.task_id }}_stage;
 
 
 -- Create aliases

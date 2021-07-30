@@ -20,22 +20,24 @@ VALUES
   ('test7@datacamp.com', 'testtest7'),
   ('test8@datacamp.com', 'testtest8');
 
-DROP TABLE IF EXISTS viewflow.incremental_users;
 
-CREATE TABLE viewflow.incremental_users (
-  user_id SERIAL,
-  email VARCHAR,
-  password VARCHAR
+DROP TABLE IF EXISTS viewflow.notifications;
+CREATE TABLE viewflow.notifications (
+  user_id INTEGER,
+  category VARCHAR,
+  notification_mode VARCHAR,
+  updated_at TIMESTAMP,
+  PRIMARY KEY (user_id, category)
 );
-
 INSERT INTO
-  viewflow.incremental_users (email, password)
+  viewflow.notifications (user_id, category, notification_mode, updated_at)
 VALUES
-  ('test_incremental1@datacamp.com', 'testtest1'),
-  ('test_incremental2@datacamp.com', 'testtest2'),
-  ('test_incremental3@datacamp.com', 'testtest3'),
-  ('test_incremental4@datacamp.com', 'testtest4'),
-  ('test_incremental5@datacamp.com', 'testtest5'),
-  ('test_incremental6@datacamp.com', 'testtest6'),
-  ('test_incremental7@datacamp.com', 'testtest7'),
-  ('test_incremental8@datacamp.com', 'testtest8');
+  (1, 'daily',       'off',       '2021-12-01 12:00:00'),
+  (1, 'recommended', 'off',       '2021-12-01 12:00:00'),
+  (1, 'blog',        'selection', '2021-12-01 12:00:00'),
+  (2, 'daily',       'all',       '2022-11-01 12:00:00'),
+  (2, 'recommended', 'off',       '2022-11-01 12:00:00'),
+  (2, 'blog',        'all',       '2022-11-01 12:00:00'),
+  (3, 'daily',       'selection', '2023-10-01 12:00:00'),
+  (3, 'recommended', 'selection', '2023-10-01 12:00:00'),
+  (3, 'blog',        'all',       '2023-10-01 12:00:00');

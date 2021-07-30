@@ -122,6 +122,11 @@ def parse_task_file(
 def get_all_dependencies(task, schema_name):
     if task["type"] == "PostgresOperator":
         dependencies = get_sql_dependencies(task["content"], schema_name)
+    elif task["type"] == "IncrementalPostgresOperator":
+        dependencies = get_sql_dependencies(task["content"], schema_name)
+        # The incremental update query can refer to the view itself without any problem
+        if task["task_id"] in dependencies:
+            dependencies.remove(task["task_id"])
     elif task["type"] == "PythonToPostgresOperator":
         dependencies = get_python_dependencies(task["content"], schema_name)
     elif task["type"] == "RmdOperator":

@@ -12,7 +12,6 @@ SQL_TEMPLATE = (
     Path(os.path.dirname(os.path.realpath(__file__))) / "template.sql"
 ).read_text()
 
-
 def _get_postgres_operator(parsed_task: Dict[str, Any]) -> PostgresOperator:
     return PostgresOperator(
         sql=SQL_TEMPLATE,
@@ -31,6 +30,7 @@ def _get_postgres_operator(parsed_task: Dict[str, Any]) -> PostgresOperator:
             "alias": parsed_task.get("alias"),
         },
     )
+
 
 def _get_incremental_postgres_operator(parsed_task: Dict[str, Any]) -> IncrementalPostgresOperator:
     return IncrementalPostgresOperator(

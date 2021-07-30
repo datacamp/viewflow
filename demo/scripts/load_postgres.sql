@@ -90,12 +90,12 @@ CREATE TABLE viewflow_raw.notifications (
 INSERT INTO
   viewflow_raw.notifications (user_id, category, notification_mode, updated_at)
 VALUES
-(1, 'daily',       'off',       '2021-07-01 12:00:00'),
-(1, 'recommended', 'off',       '2021-07-01 12:00:00'),
-(1, 'blog',        'selection', '2021-07-01 12:00:00'),
-(2, 'daily',       'all',       '2021-07-01 12:00:00'),
-(2, 'recommended', 'off',       '2021-07-01 12:00:00'),
-(2, 'blog',        'all',       '2021-07-01 12:00:00'),
-(3, 'daily',       'selection', '2021-07-01 12:00:00'),
-(3, 'recommended', 'selection', '2021-07-01 12:00:00'),
-(3, 'blog',        'all',       '2021-07-01 12:00:00');
+  (1, 'daily',       'off',       '2021-12-01 12:00:00'),
+  (1, 'recommended', 'off',       '2021-12-01 12:00:00'),
+  (1, 'blog',        'selection', '2021-12-01 12:00:00'),
+  (2, 'daily',       'all',       '2022-11-01 12:00:00'),
+  (2, 'recommended', 'off',       '2022-11-01 12:00:00'),
+  (2, 'blog',        'all',       '2022-11-01 12:00:00'),
+  (3, 'daily',       'selection', '2023-10-01 12:00:00'),
+  (3, 'recommended', 'selection', '2023-10-01 12:00:00'),
+  (3, 'blog',        'all',       '2023-10-01 12:00:00');
