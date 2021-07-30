@@ -12,7 +12,7 @@ Do you want more context on why we built and released Viewflow? Check out our an
 
 ## Viewflow demo
 
-We created a demo that shows how Viewflow works. The demo creates multiple DAGs: `viewflow-demo-1` through `viewflow-demo-4`. These DAGs create a total of four views in a local Postgres database. Check out the view files in [demo/dags/](./demo/dags/). Some of the following commands are different based on which Airflow version you're using. For new users, Airflow 2 is the best option. However, you can also run the demo using the older Airflow 1.10 version by using the indicated commands.
+We created a demo that shows how Viewflow works. The demo creates multiple DAGs: `viewflow-demo-1` through `viewflow-demo-3`. These DAGs create a total of four views in a local Postgres database. Check out the view files in [demo/dags/](./demo/dags/). Some of the following commands are different based on which Airflow version you're using. For new users, Airflow 2 is the best option. However, you can also run the demo using the older Airflow 1.10 version by using the indicated commands.
 
 ### Run the demo 
 We use `docker-compose` to instantiate an Apache Airflow instance and a Postgres database. The Airflow container and the Postgres container are defined in the `docker-compose-airflow<version>.yml` files. The first time you want to run the demo, you will first have to build the Apache Airflow docker image that embeds Viewflow:
@@ -28,7 +28,7 @@ docker-compose -f docker-compose-airflow2.yml up     # Airflow 2
 docker-compose -f docker-compose-airflow1.10.yml up  # Airflow 1.10
 ```
 
-Go to your local Apache Airflow instance on [http://localhost:8080](http://localhost:8080). There are four DAGs called `viewflow-demo-1` through `viewflow-demo-4`. Notice how Viewflow automatically generated these DAGs based on the example queries in the subfolders of [demo/dags/](./demo/dags/)!
+Go to your local Apache Airflow instance on [http://localhost:8080](http://localhost:8080). There are three DAGs called `viewflow-demo-1` through `viewflow-demo-3`. Notice how Viewflow automatically generated these DAGs based on the example queries in the subfolders of [demo/dags/](./demo/dags/)!
 
 <img src="./img/viewflow-demo-1.png" width="800">
 
@@ -251,7 +251,7 @@ This default behaviour can be changed by adding a new function in [dependencies_
 
 ### Rmd views
 
-Rmd scripts can be used mostly like R scripts. For Rmd scripts, you do have to explicitly configure the automated reading and writing of tables by adding `automate_read_write: True` to the metadata. By default, the script is executed as is. The task [top_3_user_xp_duplicate.Rmd](./demo/dags/viewflow-demo-4/top_3_user_xp_duplicate.Rmd) contains an explanation of the usage of Rmd scripts.
+Rmd scripts can be used mostly like R scripts. For Rmd scripts, you do have to explicitly configure the automated reading and writing of tables by adding `automate_read_write: True` to the metadata. By default, the script is executed as is. The task [top_3_user_xp_duplicate.Rmd](./demo/dags/viewflow-demo-3/top_3_user_xp_duplicate.Rmd) contains an explanation of the usage of Rmd scripts.
 
 
 # Contributing to Viewflow
