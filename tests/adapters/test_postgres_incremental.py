@@ -32,7 +32,7 @@ def test_incremental_updates():
         with conn.cursor() as cur:
             cur.execute("DROP TABLE IF EXISTS viewflow.emails_blog")
 
-    # Table 'emails_blog' does not yet exist --> query must be run with initial parameters
+    # Table 'emails_blog' does not yet exist --> query must be run with initial time parameters
     ti = TaskInstance(task, datetime(2020, 1, 1))
     ti.run(ignore_task_deps=True, ignore_ti_state=True, test_mode=True, session=session)
     with PostgresHook(postgres_conn_id="postgres_viewflow").get_conn() as conn:

@@ -30,7 +30,7 @@ docker-compose -f docker-compose-airflow1.10.yml up  # Airflow 1.10
 
 Go to your local Apache Airflow instance on [http://localhost:8080](http://localhost:8080). There are three DAGs called `viewflow-demo-1` through `viewflow-demo-3`. Notice how Viewflow automatically generated these DAGs based on the example queries in the subfolders of [demo/dags/](./demo/dags/)!
 
-By default, the DAGs are disabled. Turn the DAGs on by clicking on the button `Off`. This will trigger the DAGs.
+By default, the DAGs are disabled. You will first have to turn them on. This will trigger the DAGs.
 
 <img src="./img/airflow_web_homepage.png" width="800">
 <img src="./img/viewflow-demo-1.png" width="800">

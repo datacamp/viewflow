@@ -29,6 +29,7 @@ class IncrementalPostgresOperator(PostgresOperator):
         owner,
         schema,
         params,
+        time_parameters,
         primary_key,
         fields,
         alias,
@@ -50,7 +51,8 @@ class IncrementalPostgresOperator(PostgresOperator):
         self.content = content
         self.owner = owner
         self.schema = schema
-        self.parameters_time = params
+        self.params = params,
+        self.time_parameters = time_parameters
         self.primary_key = primary_key
         self.fields = fields
         self.alias = alias
@@ -67,8 +69,9 @@ class IncrementalPostgresOperator(PostgresOperator):
 
         # The result is equal to self.content where the appropriate parameters (min_time and max_time) are filled out.
         return Template(self.content).render(
-            min_time=self.parameters_time["update" if table_exists else "initial"]["min_time"],
-            max_time=self.parameters_time["update" if table_exists else "initial"]["max_time"]
+            min_time=self.time_parameters["update" if table_exists else "initial"]["min_time"],
+            max_time=self.time_parameters["update" if table_exists else "initial"]["max_time"],
+            params=self.params
         )
 
 
