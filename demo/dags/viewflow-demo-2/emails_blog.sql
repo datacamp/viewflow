@@ -13,10 +13,8 @@ primary_key: [user_id]
 time_parameters:
   initial:
     min_time: '''2020-01-01 12:00:00'''
-    max_time: '''2021-12-31 12:00:00'''
   update:
     min_time: (SELECT max(updated_at) FROM viewflow_demo.emails_blog)
-    max_time: (SELECT (max(updated_at) + interval '1 day' * 365) FROM viewflow_demo.emails_blog)
 ---
 */
 
@@ -27,5 +25,4 @@ FROM
   ON n.user_id = u.id
 WHERE
   category = 'blog' AND
-  updated_at >= {{min_time}} AND
-  updated_at < {{max_time}}
+  updated_at >= {{min_time}}

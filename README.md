@@ -275,6 +275,13 @@ on_retry_callback: on_retry_callback_custom
 
 Of course, options 1, 2 and 3 can be combined to efficiently configure the callbacks of a multitude of tasks.
 
+## Incremental updates
+
+SQL views offer an extra feature for advanced users: incremental updating. In some cases, it's possible to update the materialized view very efficiently instead of creating the view from scratch. We will illustrate the advantages and disadvantages of incremental updates with an example: [emails_blog.sql](./demo/dags/viewflow-demo-2/emails_blog.sql).
+
+In the query, the `users` table is joined with the `notifications` table. Keep in mind that this query is run on a regular basis, e.g. every day. The key to understanding the incremental update is the filter in the query: the `notifications.updated_at` field is required to be at least as large as the maximal value in the "old" materialized view. This filter will effectively only select rows corresponding to recently created/changed rows in the `notifications` table. Viewflow will then make sure the selected rows are updated or inserted in the materialized view. Under the hood, this is implemented as in [this link](https://docs.aws.amazon.com/redshift/latest/dg/merge-replacing-existing-rows.html). For this to work, you have to specify the fields of the primary key of the materialized view in the metadata.
+
+The main advantage is now clear: the incremental update is incredibly efficient, especially if you run the query frequently for a long time. A disadvantage also becomes clear in the example: you have to be careful about stale data. Because the example query only returns results corresponding to recently changed rows of the `notification` table, changes to the `users.email` field can go unnoticed. This issue could easily be solved by adding an `updated_at` field to the `users` table and also selecting recently changed rows from this table.
 
 # Contributing to Viewflow
 

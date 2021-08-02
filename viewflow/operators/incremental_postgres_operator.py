@@ -70,7 +70,7 @@ class IncrementalPostgresOperator(PostgresOperator):
         # The result is equal to self.content where the appropriate parameters (min_time and max_time) are filled out.
         return Template(self.content).render(
             min_time=self.time_parameters["update" if table_exists else "initial"]["min_time"],
-            max_time=self.time_parameters["update" if table_exists else "initial"]["max_time"],
+            max_time=self.time_parameters["update" if table_exists else "initial"].get("max_time"),
             parameters=self.parameters
         )
 
