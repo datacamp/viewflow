@@ -1,0 +1,15 @@
+owner: engineering@datacamp.com
+type: PostgresOperator
+description: This is a very simple task with custom callbacks.
+fields:
+  id: This is the ID.
+tags:
+  - cool
+  - new
+content: |-
+  SELECT test FROM some_table
+schema: viewflow
+# ignore nonsensical callbacks, it's for testing purposes
+on_failure_callback: on_success_callback_default
+on_success_callback: on_retry_callback_default
+on_retry_callback: on_failure_callback_default

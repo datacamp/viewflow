@@ -1,0 +1,8 @@
+# ignore nonsensical default callbacks, it's for testing purposes
+default_args:
+  owner:  data@datacamp.com
+  on_failure_callback: on_failure_callback_email
+  on_success_callback: on_failure_callback_email
+  on_retry_callback: on_failure_callback_email
+schedule_interval: 0 5 * * *
+start_date: "2020-04-29"

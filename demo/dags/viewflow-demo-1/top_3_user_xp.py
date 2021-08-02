@@ -3,7 +3,7 @@ import pandas as pd
 def top_3_user_xp(db_engine):
     """
     ---
-    owner: viewflow-team
+    owner: data@datacamp.com
     description: Provide the top 3 users with the most XP.
     fields:
         user_id: The user id

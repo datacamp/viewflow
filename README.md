@@ -172,7 +172,7 @@ In `$AIRFLOW_HOME/dags/`, create a directory called `my-first-viewflow-dag`. In 
 
 ```yml
 default_args:
-    owner: <owner>@dag.com
+    owner: <email>
     retries: 1
 schedule_interval: 0 6 * * *
 start_date: "2021-01-01"
@@ -202,7 +202,7 @@ A SQL view is created by a SQL file. This SQL file must contain the SQL query (a
 ```sql
 /* 
 ---
-owner: name-of-the-view-owner
+owner: email address of the view owner
 description: A description of your view. It's used as the view's description in the database
 fields:
   email: Description of your column -- used as the view column's description in the database
@@ -228,7 +228,7 @@ import pandas as pd
 def python_view(db_engine):
     """
     ---
-    owner: name-of-the-view-owner
+    owner: email address of the view owner
     description: A description of your view. It's used as the view's description in the database
     fields:
         email: Description of your column -- used as the view column's description in the database
@@ -252,6 +252,29 @@ This default behaviour can be changed by adding a new function in [dependencies_
 ### Rmd views
 
 Rmd scripts can be used mostly like R scripts. For Rmd scripts, you do have to explicitly configure the automated reading and writing of tables by adding `automate_read_write: True` to the metadata. By default, the script is executed as is. The task [top_3_user_xp_duplicate.Rmd](./demo/dags/viewflow-demo-4/top_3_user_xp_duplicate.Rmd) contains an explanation of the usage of Rmd scripts.
+
+
+## Configuring callbacks
+A useful feature is enabling callbacks when a task succeeds, fails, or is retried. This callback can take many forms, e.g. an email or a Slack message. Viewflow allows you to define your own callbacks in [viewflow/task_callbacks.py](./viewflow/task_callbacks.py). These callbacks can be configured on multiple levels:
+1. By default, certain functions defined in [viewflow/task_callbacks.py](./viewflow/task_callbacks.py) are used (e.g. `on_success_callback_default`).
+2. The callbacks can be overwritten for all tasks in a given DAG. E.g. if you have defined 3 custom callback functions in [viewflow/task_callbacks.py](./viewflow/task_callbacks.py), you can specify them in the DAG's `config.yml` file as following:
+
+```yaml
+default_args:
+  on_success_callback: on_success_callback_custom
+  on_failure_callback: on_failure_callback_custom
+  on_retry_callback: on_retry_callback_custom
+```
+
+3. For the highest level of configurability, you can overwrite the callbacks for a specific task. This option is prioritized, it doesn't matter whether there are callbacks specified in the DAG's `config.yml` file. The callback functions can simply be added to the metadata of the task's script:
+
+```yaml
+on_success_callback: on_success_callback_custom
+on_failure_callback: on_failure_callback_custom
+on_retry_callback: on_retry_callback_custom
+```
+
+Of course, options 1, 2 and 3 can be combined to efficiently configure the callbacks of a multitude of tasks.
 
 
 # Contributing to Viewflow

@@ -8,7 +8,11 @@ schema: viewflow
 connection_id: postgres_viewflow
 ---
 
-## Straightforward execution
+## Straightforward execution of this script
+Dependencies are retrieved based on the default pattern: <schema_name>.<table_name>
+This enables Viewflow to construct a valid DAG.
+However, it's your responsibility to make sure the tables are read from the database!
+
 ```{r}
-myString <- "Hello World!"
+user_emails = select(viewflow.users, c("user_id", "email"))
 ```
