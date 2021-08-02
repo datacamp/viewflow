@@ -40,10 +40,10 @@ def _get_incremental_postgres_operator(parsed_task: Dict[str, Any]) -> Increment
         content=parsed_task["content"],
         owner=parsed_task["owner"],
         schema=parsed_task["schema"],
-        params=parsed_task.get("params"),
+        parameters=parsed_task.get("parameters", {}),
         time_parameters=parsed_task["time_parameters"],
         primary_key=parsed_task["primary_key"],
-        fields=parsed_task["fields"],
+        fields=parsed_task.get("fields", {}),
         alias=parsed_task.get("alias"),
     )
 
