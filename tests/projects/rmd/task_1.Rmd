@@ -1,5 +1,5 @@
 ---
-owner: viewflow-team
+owner: data@datacamp.com
 description: Provide the top 3 users with the most XP.
 fields:
   user_id: The user id
