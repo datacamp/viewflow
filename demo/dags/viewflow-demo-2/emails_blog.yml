@@ -1,4 +1,4 @@
-owner: engineering@datacamp.com
+owner: data@datacamp.com
 type: IncrementalPostgresOperator
 description: For all users, list the email address and notification mode of the category blog.
 fields:
