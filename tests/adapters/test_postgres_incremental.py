@@ -70,7 +70,11 @@ def test_incremental_updates():
     # User 1 disables the blog notifications
     with PostgresHook(postgres_conn_id="postgres_viewflow").get_conn() as conn:
         with conn.cursor() as cur:
-            cur.execute("UPDATE viewflow.notifications SET notification_mode='off', updated_at=timestamp '2024-9-01 12:00:00' WHERE user_id=1 AND category='blog'")
+            cur.execute("""
+                UPDATE viewflow.notifications
+                SET notification_mode='off', updated_at=timestamp '2024-9-01 12:00:00'
+                WHERE user_id=1 AND category='blog'
+            """)
 
     # Third incremental update --> changed row must be updated
     ti = TaskInstance(task, datetime(2020, 1, 1))
