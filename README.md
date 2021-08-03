@@ -281,7 +281,15 @@ SQL views offer an extra feature for advanced users: incremental updating. In so
 
 In the query, the `users` table is joined with the `notifications` table. Keep in mind that this query is run on a regular basis, e.g. every day. The key to understanding the incremental update is the filter in the query: the `notifications.updated_at` field is required to be at least as large as the maximal value in the "old" materialized view. This filter will effectively only select rows corresponding to recently created/changed rows in the `notifications` table. Viewflow will then make sure the selected rows are updated or inserted in the materialized view. Under the hood, this is implemented as in [this link](https://docs.aws.amazon.com/redshift/latest/dg/merge-replacing-existing-rows.html). For this to work, you have to specify the fields of the primary key of the materialized view in the metadata.
 
-The main advantage is now clear: the incremental update is incredibly efficient, especially if you run the query frequently for a long time. A disadvantage also becomes clear in the example: you have to be careful about stale data. Because the example query only returns results corresponding to recently changed rows of the `notification` table, changes to the `users.email` field can go unnoticed. This issue could easily be solved by adding an `updated_at` field to the `users` table and also selecting recently changed rows from this table.
+The main advantage is now clear: the incremental update is incredibly efficient, especially if you run the query frequently for a long time. A disadvantage also becomes clear in the example: you have to be careful about stale data. Because the example query only returns results corresponding to recently changed rows of the `notifications` table, changes to the `users.email` field can go unnoticed. If a user's email is changed while the `notifications` table stays the same, then the materialized view will still contain the old email address after running the incremental update! This issue could easily be solved by adding an `updated_at` field to the `users` table and also selecting recently changed rows from this table.
+
+```sql
+SELECT user_id, notification_mode, email, n.updated_at
+FROM viewflow_raw.users u INNER JOIN viewflow_raw.notifications n ON n.user_id = u.id
+WHERE
+  category = 'blog' AND
+  (u.updated_at >= {{min_time}} OR n.updated_at >= {{min_time}})
+```
 
 # Contributing to Viewflow
 
