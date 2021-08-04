@@ -10,7 +10,7 @@ def parse_sql(file: pathlib.Path) -> Dict[str, Any]:
     yml = "\n".join(content[l[0] + 1 : l[1]])
     task_config = yaml.safe_load(yml)
     extras = {
-        "type": "PostgresOperator",
+        "type": task_config.get("type", "PostgresOperator"),
         "content": "\n".join(content[0 : max(l[0]-1,0)] + content[(l[1] + 2) :]),
         "task_file_path": str(file),
     }

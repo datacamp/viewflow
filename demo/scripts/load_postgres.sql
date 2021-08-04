@@ -77,3 +77,25 @@ VALUES
 (9, 1, '2021-02-15 10:00:00', '2021-02-16 14:00:00'),
 (10, 1, '2021-03-15 10:00:00', '2021-03-15 14:00:00'),
 (10, 3, '2021-03-16 10:00:00', '2021-03-16 14:00:00');
+
+
+DROP TABLE IF EXISTS viewflow_raw.notifications;
+CREATE TABLE viewflow_raw.notifications (
+  user_id INTEGER,
+  category VARCHAR,
+  notification_mode VARCHAR,
+  updated_at TIMESTAMP,
+  PRIMARY KEY (user_id, category)
+);
+INSERT INTO
+  viewflow_raw.notifications (user_id, category, notification_mode, updated_at)
+VALUES
+  (1, 'daily',       'off',       '2021-12-01 12:00:00'),
+  (1, 'recommended', 'off',       '2021-12-01 12:00:00'),
+  (1, 'blog',        'selection', '2021-12-01 12:00:00'),
+  (2, 'daily',       'all',       '2022-11-01 12:00:00'),
+  (2, 'recommended', 'off',       '2022-11-01 12:00:00'),
+  (2, 'blog',        'all',       '2022-11-01 12:00:00'),
+  (3, 'daily',       'selection', '2023-10-01 12:00:00'),
+  (3, 'recommended', 'selection', '2023-10-01 12:00:00'),
+  (3, 'blog',        'all',       '2023-10-01 12:00:00');

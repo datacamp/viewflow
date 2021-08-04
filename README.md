@@ -12,7 +12,7 @@ Do you want more context on why we built and released Viewflow? Check out our an
 
 ## Viewflow demo
 
-We created a demo that shows how Viewflow works. The demo creates multiple DAGs: `viewflow-demo-1` through `viewflow-demo-4`. These DAGs create a total of four views in a local Postgres database. Check out the view files in [demo/dags/](./demo/dags/). Some of the following commands are different based on which Airflow version you're using. For new users, Airflow 2 is the best option. However, you can also run the demo using the older Airflow 1.10 version by using the indicated commands.
+We created a demo that shows how Viewflow works. The demo creates multiple DAGs: `viewflow-demo-1` through `viewflow-demo-3`. These DAGs create a total of four views in a local Postgres database. Check out the view files in [demo/dags/](./demo/dags/). Some of the following commands are different based on which Airflow version you're using. For new users, Airflow 2 is the best option. However, you can also run the demo using the older Airflow 1.10 version by using the indicated commands.
 
 ### Run the demo 
 We use `docker-compose` to instantiate an Apache Airflow instance and a Postgres database. The Airflow container and the Postgres container are defined in the `docker-compose-airflow<version>.yml` files. The first time you want to run the demo, you will first have to build the Apache Airflow docker image that embeds Viewflow:
@@ -28,13 +28,12 @@ docker-compose -f docker-compose-airflow2.yml up     # Airflow 2
 docker-compose -f docker-compose-airflow1.10.yml up  # Airflow 1.10
 ```
 
-Go to your local Apache Airflow instance on [http://localhost:8080](http://localhost:8080). There are four DAGs called `viewflow-demo-1` through `viewflow-demo-4`. Notice how Viewflow automatically generated these DAGs based on the example queries in the subfolders of [demo/dags/](./demo/dags/)!
+Go to your local Apache Airflow instance on [http://localhost:8080](http://localhost:8080). There are three DAGs called `viewflow-demo-1` through `viewflow-demo-3`. Notice how Viewflow automatically generated these DAGs based on the example queries in the subfolders of [demo/dags/](./demo/dags/)!
 
+By default, the DAGs are disabled. You will first have to turn them on. This will trigger the DAGs.
+
+<img src="./img/airflow_web_homepage.png" width="800">
 <img src="./img/viewflow-demo-1.png" width="800">
-
-<img src="./img/viewflow-demo-2.png" width="800">
-
-By default, the DAGs are disabled. Turn the DAGs on by clicking on the button `Off`. This will trigger the DAGs.
 
 ### Query the views
 
@@ -193,7 +192,7 @@ Viewflow expects some metadata that must be included in the SQL and Python files
 * **schema**: The name of the schema in which Viewflow creates the view. It's also used by Viewflow to create the dependencies.
 * **connection_id**: Airflow connection name used to connect to the database (See Section [*Create an Airflow connection to your destination*](https://github.com/datacamp/viewflow#create-an-airflow-connection-to-your-destination)).
 
-The newly created view has the same name as the filename of the SQL query, Python script or R(md) script.
+The newly created view has the same name as the filename (actually the file stem, without extension) of the SQL query, Python script or R(md) script. Viewflow materializes the view in the database with this name, so it must be unique over all DAGs!
 
 ### SQL views
 
@@ -244,14 +243,14 @@ Please note that Viewflow expects the Python function that creates the view to h
 
 ### R views
 
-Viewflow handles R scripts similar to the existing SQL and Python files. Additionally, there's an element of automatisation. You simply define the view in R code, Viewflow will automatically read the necessary tables and write the new view to the database. Note that you need to define the new view in the R script with the same name as the R script (which is also the name of the table where the view is materialized in the database).
+Viewflow handles R scripts similar to the existing SQL and Python files. Additionally, there's an element of automatisation. You simply define the view in R code, Viewflow will automatically read the necessary tables and write the new view to the database. Note that you need to define the new view in the R script with the same name as the R script (which is also the name of the table of the materialized view in the database).
 
 By default, other tables are expected to be referenced as `<schema_name>.<table_name>`.
 This default behaviour can be changed by adding a new function in [dependencies_r_patterns.py](./viewflow/parsers/dependencies_r_patterns.py) and adding a line `dependency_function: <your_custom_function>` to the metadata of the R script. The script [user_xp_duplicate.R](./demo/dags/viewflow-demo-3/user_xp_duplicate.R) illustrates this.
 
 ### Rmd views
 
-Rmd scripts can be used mostly like R scripts. For Rmd scripts, you do have to explicitly configure the automated reading and writing of tables by adding `automate_read_write: True` to the metadata. By default, the script is executed as is. The task [top_3_user_xp_duplicate.Rmd](./demo/dags/viewflow-demo-4/top_3_user_xp_duplicate.Rmd) contains an explanation of the usage of Rmd scripts.
+Rmd scripts can be used mostly like R scripts. For Rmd scripts, you do have to explicitly configure the automated reading and writing of tables by adding `automate_read_write: True` to the metadata. By default, the script is executed as is. The task [top_3_user_xp_duplicate.Rmd](./demo/dags/viewflow-demo-3/top_3_user_xp_duplicate.Rmd) contains an explanation of the usage of Rmd scripts.
 
 
 ## Configuring callbacks
@@ -276,6 +275,21 @@ on_retry_callback: on_retry_callback_custom
 
 Of course, options 1, 2 and 3 can be combined to efficiently configure the callbacks of a multitude of tasks.
 
+## Incremental updates
+
+SQL views offer an extra feature for advanced users: incremental updating. In some cases, it's possible to update the materialized view very efficiently instead of creating the view from scratch. We will illustrate the advantages and disadvantages of incremental updates with an example: [emails_blog.sql](./demo/dags/viewflow-demo-2/emails_blog.sql).
+
+In the query, the `users` table is joined with the `notifications` table. Keep in mind that this query is run on a regular basis, e.g. every day. The key to understanding the incremental update is the filter in the query: the `notifications.updated_at` field is required to be at least as large as the maximal value in the "old" materialized view. This filter will effectively only select rows corresponding to recently created/changed rows in the `notifications` table. Viewflow will then make sure the selected rows are updated or inserted in the materialized view. Under the hood, this is implemented as in [this link](https://docs.aws.amazon.com/redshift/latest/dg/merge-replacing-existing-rows.html). For this to work, you have to specify the fields of the primary key of the materialized view in the metadata. In summary, there are 3 additional mandatory fields in the metadata: `type`, `primary_key` and `time_parameters`.
+
+The main advantage is now clear: the incremental update is incredibly efficient, especially if you run the query frequently for a long time. A disadvantage also becomes clear in the example: you have to be careful about stale data. Because the example query only returns results corresponding to recently changed rows of the `notifications` table, changes to the `users.email` field can go unnoticed. If a user's email is changed while the `notifications` table stays the same, then the materialized view will still contain the old email address after running the incremental update! This issue could easily be solved by adding an `updated_at` field to the `users` table and also selecting recently changed rows from this table.
+
+```sql
+SELECT user_id, notification_mode, email, n.updated_at
+FROM viewflow_raw.users u INNER JOIN viewflow_raw.notifications n ON n.user_id = u.id
+WHERE
+  category = 'blog' AND
+  (u.updated_at >= {{min_time}} OR n.updated_at >= {{min_time}})
+```
 
 # Contributing to Viewflow
 

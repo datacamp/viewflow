@@ -1,8 +1,0 @@
-default_args:
-    owner: data@datacamp.com
-    retries: 1
-    catchup: false
-schedule_interval: 0 6 * * *
-start_date: "2021-07-15"
-max_active_runs: 1
-catchup: false

@@ -38,14 +38,20 @@ O = TypeVar("O", bound=BaseOperator)
 DAG_CONFIG_FILE = "config.yml"
 OPERATORS = {
     "PostgresOperator": postgres_adapter.create_task,
+    "IncrementalPostgresOperator": postgres_adapter.create_task,
     "PythonToPostgresOperator": python_adapter.create_task,
     "RmdOperator": rmd_adapter.create_task,
     "ROperator": r_adapter.create_task
 }
 
-PARSERS = {".yml": parse_yml, ".sql": parse_sql, ".py": parse_python, ".rmd": parse_rmd, ".r": parse_r}
-
-SQL_OPERATORS = ["PostgresOperator"]
+PARSERS = {
+    ".yml": parse_yml,
+    ".yaml": parse_yml,
+    ".sql": parse_sql,
+    ".py": parse_python,
+    ".rmd": parse_rmd,
+    ".r": parse_r
+}
 
 
 @dataclass
@@ -117,6 +123,11 @@ def parse_task_file(
 def get_all_dependencies(task, schema_name):
     if task["type"] == "PostgresOperator":
         dependencies = get_sql_dependencies(task["content"], schema_name)
+    elif task["type"] == "IncrementalPostgresOperator":
+        dependencies = get_sql_dependencies(task["content"], schema_name)
+        # The incremental update query can refer to the view itself without any problem
+        if task["task_id"] in dependencies:
+            dependencies.remove(task["task_id"])
     elif task["type"] == "PythonToPostgresOperator":
         dependencies = get_python_dependencies(task["content"], schema_name)
     elif task["type"] == "RmdOperator":
